@@ -47,9 +47,9 @@ export function About() {
                 aria-hidden="true"
               />
               <img
-                src="/images/mateo.png"
+                src="/images/mateo.jpeg"
                 alt="Mateo Calazans — Shopify Developer"
-                className="relative w-72 h-[22rem] sm:w-80 sm:h-[26rem] lg:w-96 lg:h-[30rem] object-cover object-bottom rounded-2xl transition-shadow duration-500 group-hover:shadow-[0_0_40px_rgba(74,123,247,0.25)]"
+                className="relative w-72 h-[22rem] sm:w-80 sm:h-[26rem] lg:w-96 lg:h-[30rem] object-cover object-top rounded-2xl transition-shadow duration-500 group-hover:shadow-[0_0_40px_rgba(74,123,247,0.25)]"
                 loading="lazy"
               />
               <div className="absolute -right-6 top-10 bottom-10 w-px bg-gradient-to-b from-transparent via-accent/40 to-transparent hidden lg:block" />
