@@ -47,7 +47,7 @@ export function About() {
 
               {/* Photo */}
               <img
-                src="/images/mateo.jpeg"
+                src="/images/mateo.png"
                 alt="Mateo Calazans — Shopify Developer"
                 className="relative w-72 h-[22rem] sm:w-80 sm:h-[26rem] lg:w-96 lg:h-[30rem] object-cover object-bottom rounded-2xl transition-shadow duration-500 group-hover:shadow-[0_0_40px_rgba(74,123,247,0.25)]"
                 loading="lazy"
