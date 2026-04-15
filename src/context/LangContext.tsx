@@ -246,7 +246,7 @@ export const translations = {
       },
     },
   },
-} as const;
+};
 
 // ─── Context ──────────────────────────────────────────────────────────────────
 interface LangContextValue {
