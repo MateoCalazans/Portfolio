@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { type FormEvent, useState } from "react";
 import { downloadFile } from "../utils/download";
+import { useLang } from "../context/LangContext";
 
 const contactInfo = [
   {
@@ -49,6 +50,7 @@ const fadeUp = {
 };
 
 export function Contact() {
+  const { t } = useLang();
   const [submitted, setSubmitted] = useState(false);
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -80,13 +82,13 @@ export function Contact() {
           className="mb-20"
         >
           <span className="text-accent text-xs font-medium tracking-[0.2em] uppercase mb-4 block">
-            06 — Contact
+            {t.contact.eyebrow}
           </span>
           <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4">
-            Let's Work Together
+            {t.contact.heading}
           </h2>
           <p className="text-muted text-lg font-light max-w-xl">
-            Have a project in mind? I'd love to hear about it.
+            {t.contact.subheading}
           </p>
         </motion.div>
 
@@ -124,12 +126,14 @@ export function Contact() {
             {/* Download CV */}
             <div className="pt-6">
               <button
-                onClick={() => downloadFile("/resume.pdf", "Mateo_Calazans_Resume.pdf")}
+                onClick={() =>
+                  downloadFile("/resume.pdf", "Mateo_Calazans_Resume.pdf")
+                }
                 className="group inline-flex items-center gap-3 bg-accent text-bg px-8 py-4 text-sm font-semibold hover:bg-accent-hover transition-colors duration-200 cursor-pointer"
                 data-hoverable
               >
                 <Download size={16} />
-                Download CV
+                {t.contact.downloadCV}
               </button>
             </div>
           </motion.div>
@@ -147,7 +151,7 @@ export function Contact() {
                   htmlFor="contact-name"
                   className="block text-xs font-medium text-muted uppercase tracking-wider mb-2"
                 >
-                  Name
+                  {t.contact.form.name}
                 </label>
                 <input
                   type="text"
@@ -155,7 +159,7 @@ export function Contact() {
                   name="name"
                   required
                   className="w-full bg-surface border border-border px-4 py-3 text-sm text-text placeholder-muted/40 focus:outline-none focus:border-accent/50 transition-colors duration-200"
-                  placeholder="Your name"
+                  placeholder={t.contact.form.namePlaceholder}
                 />
               </div>
 
@@ -164,7 +168,7 @@ export function Contact() {
                   htmlFor="contact-email"
                   className="block text-xs font-medium text-muted uppercase tracking-wider mb-2"
                 >
-                  Email
+                  {t.contact.form.email}
                 </label>
                 <input
                   type="email"
@@ -172,7 +176,7 @@ export function Contact() {
                   name="email"
                   required
                   className="w-full bg-surface border border-border px-4 py-3 text-sm text-text placeholder-muted/40 focus:outline-none focus:border-accent/50 transition-colors duration-200"
-                  placeholder="your@email.com"
+                  placeholder={t.contact.form.emailPlaceholder}
                 />
               </div>
 
@@ -181,7 +185,7 @@ export function Contact() {
                   htmlFor="contact-message"
                   className="block text-xs font-medium text-muted uppercase tracking-wider mb-2"
                 >
-                  Message
+                  {t.contact.form.message}
                 </label>
                 <textarea
                   id="contact-message"
@@ -189,7 +193,7 @@ export function Contact() {
                   required
                   rows={5}
                   className="w-full bg-surface border border-border px-4 py-3 text-sm text-text placeholder-muted/40 focus:outline-none focus:border-accent/50 transition-colors duration-200 resize-none"
-                  placeholder="Tell me about your project..."
+                  placeholder={t.contact.form.messagePlaceholder}
                 />
               </div>
 
@@ -198,7 +202,7 @@ export function Contact() {
                 className="group inline-flex items-center gap-2 border border-accent text-accent px-8 py-3 text-sm font-semibold hover:bg-accent hover:text-bg transition-all duration-200 cursor-pointer"
                 data-hoverable
               >
-                {submitted ? "Message Sent!" : "Send Message"}
+                {submitted ? t.contact.form.sent : t.contact.form.send}
                 <Send
                   size={14}
                   className="group-hover:translate-x-0.5 transition-transform"

@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import UnicornScene from "unicornstudio-react";
 import { TypewriterEffect } from "../components/TypewriterEffect";
 import { ArrowDown, ArrowRight } from "lucide-react";
+import { useLang } from "../context/LangContext";
 
 const stagger = {
   hidden: { opacity: 0 },
@@ -21,6 +22,8 @@ const fadeUp = {
 };
 
 export function Hero() {
+  const { t } = useLang();
+
   return (
     <section
       id="hero"
@@ -55,7 +58,7 @@ export function Hero() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
             </span>
-            Available for work ✦
+            {t.hero.available}
           </span>
         </motion.div>
 
@@ -82,7 +85,7 @@ export function Hero() {
           variants={fadeUp}
           className="text-base sm:text-lg text-muted max-w-xl mb-10 font-light leading-relaxed"
         >
-          Crafting high-performance Shopify storefronts that convert.
+          {t.hero.tagline}
         </motion.p>
 
         {/* CTA Buttons */}
@@ -92,7 +95,7 @@ export function Hero() {
             className="group inline-flex items-center gap-2 bg-accent text-bg px-6 py-3 text-sm font-semibold hover:bg-accent-hover transition-colors duration-200 cursor-pointer"
             data-hoverable
           >
-            View My Work
+            {t.hero.viewWork}
             <ArrowDown
               size={16}
               className="group-hover:translate-y-0.5 transition-transform"
@@ -103,7 +106,7 @@ export function Hero() {
             className="group inline-flex items-center gap-2 border border-border text-text px-6 py-3 text-sm font-medium hover:border-accent/50 hover:text-accent transition-all duration-200 cursor-pointer"
             data-hoverable
           >
-            Get In Touch
+            {t.hero.getInTouch}
             <ArrowRight
               size={16}
               className="group-hover:translate-x-0.5 transition-transform"

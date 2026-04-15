@@ -1,30 +1,9 @@
 import { motion } from "framer-motion";
-
-const experiences = [
-  {
-    company: "E-smart Capitais",
-    role: "Shopify Developer",
-    period: "Apr 2025 – Present",
-    description:
-      "Maintaining and scaling storefronts for multiple brands, improving performance and accessibility, and developing custom features using Shopify Functions and Extensions.",
-  },
-  {
-    company: "Organifi",
-    role: "Shopify Developer",
-    period: "",
-    description:
-      "Developed and customized Shopify themes focused on responsive design, performance, and SEO/CRO optimization. Integrated third-party apps and used metaobjects for tailored features.",
-  },
-  {
-    company: "Case Mate",
-    role: "Shopify Developer",
-    period: "",
-    description:
-      "Contributed to theme development and optimization, focusing on performance, responsiveness, and conversion rate improvements. Delivered scalable, customized solutions using Shopify APIs.",
-  },
-];
+import { useLang } from "../context/LangContext";
 
 export function Experience() {
+  const { t } = useLang();
+
   return (
     <section id="experience" className="py-32 lg:py-40 bg-surface">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -36,20 +15,18 @@ export function Experience() {
           className="mb-20"
         >
           <span className="text-accent text-xs font-medium tracking-[0.2em] uppercase mb-4 block">
-            03 — Career
+            {t.experience.eyebrow}
           </span>
           <h2 className="text-4xl sm:text-5xl font-bold tracking-tight">
-            Experience
+            {t.experience.heading}
           </h2>
         </motion.div>
 
         {/* Timeline */}
         <div className="relative pl-8 lg:pl-12">
-          {/* Vertical line */}
           <div className="timeline-line" />
-
           <div className="space-y-16">
-            {experiences.map((exp, i) => (
+            {t.experience.jobs.map((exp, i) => (
               <motion.div
                 key={exp.company}
                 initial={{ opacity: 0, x: 40 }}

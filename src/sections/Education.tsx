@@ -1,7 +1,10 @@
 import { motion } from "framer-motion";
 import { GraduationCap } from "lucide-react";
+import { useLang } from "../context/LangContext";
 
 export function Education() {
+  const { t } = useLang();
+
   return (
     <section id="education" className="py-32 lg:py-40 bg-surface">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -13,10 +16,10 @@ export function Education() {
           className="mb-16"
         >
           <span className="text-accent text-xs font-medium tracking-[0.2em] uppercase mb-4 block">
-            05 — Education
+            {t.education.eyebrow}
           </span>
           <h2 className="text-4xl sm:text-5xl font-bold tracking-tight">
-            Education
+            {t.education.heading}
           </h2>
         </motion.div>
 
@@ -38,15 +41,13 @@ export function Education() {
 
             <div>
               <h3 className="text-lg font-semibold mb-1">
-                Technologist Degree in Systems Analysis and Development
+                {t.education.degree}
               </h3>
               <p className="text-accent text-sm font-medium mb-3">
-                Federal University of Rio Grande do Norte (UFRN)
+                {t.education.institution}
               </p>
               <p className="text-muted text-sm leading-relaxed">
-                Comprehensive program covering software engineering, algorithms,
-                data structures, databases, and modern web development
-                practices.
+                {t.education.description}
               </p>
             </div>
           </div>

@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Code, ShoppingBag, Zap } from "lucide-react";
+import { useLang } from "../context/LangContext";
 
 const skills = [
   "Liquid",
@@ -19,46 +20,6 @@ const skills = [
   "Git",
 ];
 
-const categories = [
-  {
-    icon: ShoppingBag,
-    title: "Shopify Ecosystem",
-    items: [
-      "Liquid",
-      "Shopify CLI",
-      "Theme Architecture",
-      "Shopify Functions",
-      "Extensions",
-      "Metaobjects",
-      "Storefront API",
-    ],
-  },
-  {
-    icon: Code,
-    title: "Frontend",
-    items: [
-      "JavaScript",
-      "TypeScript",
-      "React",
-      "HTML5",
-      "CSS3",
-      "Tailwind",
-      "Responsive Design",
-    ],
-  },
-  {
-    icon: Zap,
-    title: "Performance & Growth",
-    items: [
-      "Core Web Vitals",
-      "CRO",
-      "SEO",
-      "Accessibility",
-      "Third-party Integrations",
-    ],
-  },
-];
-
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: {
@@ -69,7 +30,48 @@ const fadeUp = {
 };
 
 export function Skills() {
+  const { t } = useLang();
   const doubledSkills = [...skills, ...skills];
+
+  const categories = [
+    {
+      icon: ShoppingBag,
+      title: t.skills.categories.shopify,
+      items: [
+        "Liquid",
+        "Shopify CLI",
+        "Theme Architecture",
+        "Shopify Functions",
+        "Extensions",
+        "Metaobjects",
+        "Storefront API",
+      ],
+    },
+    {
+      icon: Code,
+      title: t.skills.categories.frontend,
+      items: [
+        "JavaScript",
+        "TypeScript",
+        "React",
+        "HTML5",
+        "CSS3",
+        "Tailwind",
+        "Responsive Design",
+      ],
+    },
+    {
+      icon: Zap,
+      title: t.skills.categories.performance,
+      items: [
+        "Core Web Vitals",
+        "CRO",
+        "SEO",
+        "Accessibility",
+        "Third-party Integrations",
+      ],
+    },
+  ];
 
   return (
     <section id="skills" className="py-32 lg:py-40">
@@ -82,20 +84,18 @@ export function Skills() {
           className="mb-16"
         >
           <span className="text-accent text-xs font-medium tracking-[0.2em] uppercase mb-4 block">
-            02 — Skills
+            {t.skills.eyebrow}
           </span>
           <h2 className="text-4xl sm:text-5xl font-bold tracking-tight">
-            Tech Stack
+            {t.skills.heading}
           </h2>
         </motion.div>
       </div>
 
       {/* Marquee */}
       <div className="relative overflow-hidden mb-20">
-        {/* Fade edges */}
         <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-bg to-transparent z-10" />
         <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-bg to-transparent z-10" />
-
         <div className="flex animate-marquee">
           {doubledSkills.map((skill, i) => (
             <span
