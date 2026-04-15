@@ -123,3 +123,10 @@ body {
     animation: none;
   }
 }
+
+/* ─── Hide Unicorn Studio Watermark ─── */
+a[href*="unicorn.studio"] {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
