@@ -118,7 +118,7 @@ export function Hero() {
       {/* Watermark Overlays to hide Unicorn Studio logo */}
       <div className="absolute bottom-0 left-0 w-full h-12 bg-bg z-[5] pointer-events-none" />
       <div className="absolute bottom-12 left-0 w-full h-24 bg-gradient-to-t from-bg to-transparent z-[5] pointer-events-none" />
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-24 bg-bg z-[5] blur-md pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 mx-auto w-[500px] h-24 bg-bg z-[5] blur-md pointer-events-none transform-gpu will-change-transform" />
 
       {/* Scroll indicator */}
       <motion.div
