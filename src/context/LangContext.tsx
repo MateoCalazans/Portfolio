@@ -257,8 +257,15 @@ interface LangContextValue {
 
 const LangContext = createContext<LangContextValue | null>(null);
 
+function getDefaultLang(): Lang {
+  if (typeof navigator === "undefined") return "en";
+  const languages = navigator.languages || [navigator.language];
+  const prefersPt = languages.some((l) => l && l.toLowerCase().startsWith("pt"));
+  return prefersPt ? "pt" : "en";
+}
+
 export function LangProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>("en");
+  const [lang, setLang] = useState<Lang>(getDefaultLang);
 
   return (
     <LangContext.Provider
