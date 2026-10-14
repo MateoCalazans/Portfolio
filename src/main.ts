@@ -165,12 +165,13 @@ const DIVE_MS_REDUCED = 450; // the crossfade under reduced motion
 const GESTURE_GAP = 200; // ms without wheel events that separates two gestures
 const INERTIA_MAX = 600; // ms after landing during which a still-decaying gesture is swallowed
 const SWIPE_MIN = 12; // px a finger travels before a swipe counts
+const SETTLE_IDLE = 150; // ms without scroll events before a scroll that stopped mid-dive is finished
 const EDGE = 2; // px: with display scaling the scroll lands on device pixels, a fraction off a world's edge
 
 let diving = 0; // rAF id of the running dive, 0 when idle
 let wheelLocked = false, lastWheel = 0, lastDelta = 0, landed = 0;
 let held = false, lastY = window.scrollY, dir = 1;
-let touchY0 = 0, touchY = 0, touchFired = false;
+let touchY0 = 0, touchMode: "?" | "dive" | "native" = "?", touchFired = false, settleTimer = 0;
 
 const ends = () => starts().map((s, i) => s + m!.R[i]);
 const easeInOut = (p: number) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
@@ -194,8 +195,8 @@ function diveTarget(delta: number): number | null {
   return target !== null && Math.abs(target - currentY()) >= 1 ? target : null;
 }
 
-/** Animate the scroll to `target`. `lock` also freezes the page scroll, which stops touch momentum. */
-function dive(target: number, lock = false) {
+/** Animate the scroll to `target`. */
+function dive(target: number) {
   if (!m) return;
   stopDive();
   const base = scrollY0(), from = currentY(), dist = target - from;
@@ -204,7 +205,6 @@ function dive(target: number, lock = false) {
   const dur = Math.min(Math.max((per * Math.abs(dist)) / m.D, per * 0.5), per * 2.2);
   // One dive scrolls linearly (the zoom adds its own easing); longer jumps ease in and out.
   const ease = Math.abs(dist) > m.D * 1.05 ? easeInOut : (p: number) => p;
-  if (lock) document.documentElement.classList.add("is-diving");
   wheelLocked = true;
   const t0 = performance.now();
   const step = (now: number) => {
@@ -212,29 +212,35 @@ function dive(target: number, lock = false) {
     window.scrollTo(0, base + from + dist * ease(p));
     update();
     if (p < 1) diving = requestAnimationFrame(step);
-    else { diving = 0; landed = performance.now(); lastY = window.scrollY; document.documentElement.classList.remove("is-diving"); }
+    else { diving = 0; landed = performance.now(); lastY = window.scrollY; }
   };
   diving = requestAnimationFrame(step);
 }
 
 function stopDive() {
   if (diving) { cancelAnimationFrame(diving); diving = 0; landed = performance.now(); }
-  document.documentElement.classList.remove("is-diving");
 }
 
-/** A scroll that came to rest inside a dive (touch momentum, scrollbar drag) finishes it. */
+/**
+ * A scroll that came to rest inside a dive (touch momentum, scrollbar drag) finishes it in the
+ * direction it was going. Only once the scroll has stopped: starting a dive while momentum is still
+ * moving the page makes the two fight, and the page bounces back and forth.
+ */
 function settle() {
+  clearTimeout(settleTimer);
   if (!m || diving || held) return;
   const { n, t } = locate(currentY());
   const into = t * m.D;
-  if (into > EDGE && m.D - into > EDGE && n < N - 1) dive(dir > 0 ? starts()[n + 1] : ends()[n], true);
+  if (into > EDGE && m.D - into > EDGE && n < N - 1) dive(dir > 0 ? starts()[n + 1] : ends()[n]);
 }
+const settleSoon = () => { clearTimeout(settleTimer); settleTimer = window.setTimeout(settle, SETTLE_IDLE); };
 
 window.addEventListener("scroll", () => {
   const y = window.scrollY;
   if (y !== lastY) { dir = y > lastY ? 1 : -1; lastY = y; }
-  settle();
+  if (!diving) settleSoon();
 }, { passive: true });
+window.addEventListener("scrollend", () => settle());
 
 window.addEventListener("wheel", (e) => {
   if (!m || e.ctrlKey) return; // ctrl + wheel is page zoom
@@ -258,24 +264,33 @@ window.addEventListener("wheel", (e) => {
   if (target !== null) { e.preventDefault(); dive(target); }
 }, { passive: false });
 
+// A swipe is decided on its first move. Only a swipe that starts at a world's edge, heading out of
+// it, becomes a dive: its first move is cancelled before the page scrolls, so there is no momentum
+// to fight. Any other swipe is left alone for its whole length, momentum included.
 window.addEventListener("touchstart", (e) => {
   held = true;
+  touchMode = "?";
   touchFired = false;
-  touchY0 = touchY = e.touches[0].clientY;
+  touchY0 = e.touches[0].clientY;
 }, { passive: true });
 
 window.addEventListener("touchmove", (e) => {
   if (e.touches.length > 1) return; // pinch zoom
-  if (diving || touchFired) { if (e.cancelable) e.preventDefault(); return; }
-  const y = e.touches[0].clientY, step = touchY - y;
-  touchY = y;
-  const target = diveTarget(step || touchY0 - y);
-  if (target === null) return;
+  if (diving) { if (e.cancelable) e.preventDefault(); return; }
+  if (touchMode === "native") return;
+  const d = touchY0 - e.touches[0].clientY; // > 0: finger moves up, page scrolls down
+  if (touchMode === "?") {
+    if (!d) return;
+    touchMode = e.cancelable && diveTarget(Math.sign(d)) !== null ? "dive" : "native";
+    if (touchMode === "native") return;
+  }
   if (e.cancelable) e.preventDefault();
-  if (Math.abs(touchY0 - y) >= SWIPE_MIN) { touchFired = true; dive(target, true); }
+  if (touchFired || Math.abs(d) < SWIPE_MIN) return;
+  const target = diveTarget(d);
+  if (target !== null) { touchFired = true; dive(target); }
 }, { passive: false });
 
-const release = () => { held = false; touchFired = false; settle(); };
+const release = () => { held = false; touchMode = "?"; settleSoon(); };
 window.addEventListener("touchend", release, { passive: true });
 window.addEventListener("touchcancel", release, { passive: true });
 // Mouse only: a pressed button may be dragging the scrollbar.
