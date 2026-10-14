@@ -1,0 +1,72 @@
+/* Mergulho — generated from tokens.json. Each world is a [data-theme]. */
+@import url("https://fonts.googleapis.com/css2?family=Unbounded:wght@300..900&family=Instrument+Sans:wght@400..700&family=IBM+Plex+Mono:wght@400;500&display=swap");
+
+:root {
+  /* palette */
+  --ink-900: #0e0e0c;
+  --bone-100: #ede8dd;
+  --paper-50: #f3f1ec;
+  --stone-300: #cfc9bc;
+  --ember-500: #ff4f1a; /* the one tweakable accent */
+  --cobalt-600: #1f2bff;
+  --cream-50: #f2ede4;
+  --lime-300: #c8f25a;
+  --moss-700: #2f6b3a;
+  --moss-100: #ddefc9;
+  --crimson-800: #8c1c2e;
+  --crimson-100: #ffc2cc;
+  --hud-glass: rgba(14, 14, 12, 0.74);
+  --hud-tip: rgba(14, 14, 12, 0.9);
+
+  /* type */
+  --font-display: "Unbounded", "Arial Black", sans-serif;
+  --font-body: "Instrument Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  /* layout */
+  --gutter-left: clamp(20px, 4vw, 56px);
+  --gutter-right: clamp(64px, 7vw, 104px); /* reserved for the HUD */
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px;
+  --space-6: 32px; --space-7: 40px; --space-8: 56px;
+  --space-9: clamp(40px, 6vw, 80px);
+  --space-10: clamp(48px, 7vw, 96px);
+  --radius-field: 16px; --radius-card: 28px; --radius-pill: 99px; --radius-disc: 50%;
+  --stroke-rule: 1.5px; --stroke-hairline: 1px;
+  --hud-ring: 0 0 0 1px rgba(237, 232, 221, 0.16);
+
+  /* motion */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.1, 1);
+  --t-hover: 0.3s; --t-portal: 0.4s; --t-pulse: 1.6s; --t-caret: 1s; --t-bob: 2.4s; --t-marquee: 34s;
+
+  /* dive */
+  --portal-size: 0.74em;
+}
+@media (max-width: 760px) { :root { --gutter-right: 52px; } }
+
+/* worlds */
+[data-theme="surface"] { --world-bg: var(--ink-900);   --world-ink: var(--bone-100); --world-muted: var(--stone-300); --world-rule-soft: rgba(237, 232, 221, 0.25); --world-next: var(--ember-500); }
+[data-theme="about"]   { --world-bg: var(--ember-500); --world-ink: var(--ink-900);  --world-muted: #3a1a0e;          --world-rule-soft: rgba(14, 14, 12, 0.25);   --world-next: var(--bone-100); }
+[data-theme="code"]    { --world-bg: var(--bone-100);  --world-ink: var(--ink-900);  --world-muted: #5a554b;          --world-rule-soft: rgba(14, 14, 12, 0.25);   --world-next: var(--ink-900); }
+[data-theme="journey"] { --world-bg: var(--ink-900);   --world-ink: var(--bone-100); --world-muted: var(--stone-300); --world-rule-soft: rgba(237, 232, 221, 0.25); --world-next: var(--lime-300); }
+[data-theme="contact"] { --world-bg: var(--lime-300);  --world-ink: var(--ink-900);  --world-muted: #3d4a12;          --world-rule-soft: rgba(14, 14, 12, 0.25);   --world-next: var(--ember-500); }
+[data-theme] { background: var(--world-bg); color: var(--world-ink); }
+
+/* type styles (desktop values are the max of each clamp) */
+.t-name-hero   { font: 800 min(16.5vw, 27vh)/0.88 var(--font-display); letter-spacing: -0.05em; }
+.t-level-title { font: 800 min(calc(80vw / (var(--len) * 0.95)), 22vh)/0.9 var(--font-display); letter-spacing: -0.045em; white-space: nowrap; text-transform: uppercase; }
+.t-portal-word { font: 800 min(calc(84vw / (var(--len) * 0.95)), 22vh)/0.9 var(--font-display); letter-spacing: -0.045em; white-space: nowrap; text-transform: uppercase; }
+.t-statement   { font: 500 clamp(22px, 3.3vw, 46px)/1.15 var(--font-display); letter-spacing: -0.025em; }
+.t-number      { font: 800 clamp(40px, 5.4vw, 76px)/0.9 var(--font-display); letter-spacing: -0.05em; }
+.t-card-name   { font: 700 clamp(32px, 4vw, 56px)/1.08 var(--font-display); letter-spacing: -0.03em; }
+.t-card-title  { font: 700 clamp(22px, 2.4vw, 34px)/1.08 var(--font-display); letter-spacing: -0.03em; }
+.t-marquee     { font: 700 clamp(26px, 3.4vw, 48px)/1.2 var(--font-display); letter-spacing: -0.03em; }
+.t-role        { font: 600 clamp(22px, 2.6vw, 36px)/1.2 var(--font-display); letter-spacing: -0.03em; }
+.t-body        { font: 400 clamp(17px, 1.5vw, 21px)/1.55 var(--font-body); }
+.t-list-item   { font: 500 clamp(18px, 1.6vw, 22px)/1.3 var(--font-body); }
+.t-contact-row { font: 600 clamp(18px, 1.9vw, 26px)/1.3 var(--font-body); letter-spacing: -0.01em; }
+.t-button      { font: 600 16px/1 var(--font-body); }
+.t-chip        { font: 500 14px/1 var(--font-body); }
+.t-label       { font: 400 12px/1.3 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; }
+.t-nav         { font: 400 13px/1.3 var(--font-mono); letter-spacing: 0.04em; }
+.t-hud         { font: 400 11px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; }
+.t-depth       { font: 400 10px/1 var(--font-mono); letter-spacing: 0.14em; writing-mode: vertical-rl; transform: rotate(180deg); }

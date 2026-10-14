@@ -1,19 +1,259 @@
-<!DOCTYPE html>
-<html lang="en" translate="no" class="notranslate">
+<!doctype html>
+<html lang="pt-BR" translate="no">
   <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Mateo Calazans — Shopify Developer & Software Engineer based in Brazil. Crafting high-performance Shopify storefronts that convert." />
-    <meta name="theme-color" content="#0a0a0a" />
-    <meta name="google" content="notranslate" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Mateo Calazans — Shopify Developer</title>
+    <meta name="description" content="Mateo Calazans — desenvolvedor Shopify e Theme Architect em Natal, Brasil. Storefronts Shopify de alta performance que convertem." />
+    <meta name="theme-color" content="#0e0e0c" />
+    <meta name="google" content="notranslate" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <!-- Fonts load without blocking the first paint; text shows in the fallback face until they arrive. -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300..900&family=Instrument+Sans:wght@400..700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300..900&family=Instrument+Sans:wght@400..700&family=IBM+Plex+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300..900&family=Instrument+Sans:wght@400..700&family=IBM+Plex+Mono:wght@400;500&display=swap" /></noscript>
+    <script>
+      // Language before first paint: stored choice, else the browser language (pt → PT, anything else → EN).
+      try {
+        var l = localStorage.getItem("mc-lang");
+        if (l !== "pt" && l !== "en") l = /^pt/i.test(navigator.language || "") ? "pt" : "en";
+        document.documentElement.lang = l === "en" ? "en" : "pt-BR";
+      } catch (e) {}
+    </script>
+    <script type="module" src="/src/main.ts"></script>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <div class="root">
+      <div class="stage">
+
+        <!-- 00 · Surface -->
+        <div class="world" data-theme="surface">
+          <div class="content">
+            <section class="hero">
+              <header class="hero-top">
+                <span class="wordmark">MC<span class="wordmark-dot">.</span> <span class="wordmark-site">mateo.dev</span></span>
+                <nav class="toplinks" aria-label="Seções" data-t-aria="navAria">
+                  <button class="tl" type="button" data-go="1" data-t="n1">Sobre</button>
+                  <button class="tl" type="button" data-go="2" data-t="n2">Código</button>
+                  <button class="tl" type="button" data-go="3" data-t="n3">Trajetória</button>
+                  <button class="tl" type="button" data-go="4" data-t="n4">Contato</button>
+                </nav>
+                <a class="btn btn--compact" href="/resume.pdf" download="Mateo_Calazans_CV.pdf" data-t="cv">Baixar CV ↓</a>
+              </header>
+              <div class="hero-mid">
+                <span class="lbl status"><span class="pulse"></span><span data-t="status">Disponível para trabalho</span></span>
+                <h1 class="hero-name" aria-label="Mateo Calazans">
+                  <span class="hero-name-l1">MATE<button class="portal" type="button" data-go="1" aria-label="Mergulhar: Sobre" data-t-aria="dive1"></button></span>
+                  <span class="hero-name-l2">CALAZANS</span>
+                </h1>
+              </div>
+              <div class="hero-foot">
+                <div class="hero-intro">
+                  <p class="role">Theme Architect.<span class="caret"></span></p>
+                  <p class="body muted" data-t="tagline">Criando storefronts Shopify de alta performance que convertem.</p>
+                </div>
+                <div class="actions">
+                  <button class="btn btn--solid" type="button" data-go="3" data-t="ctaWork">Ver trajetória</button>
+                  <button class="btn" type="button" data-go="4" data-t="ctaContact">Entrar em contato</button>
+                </div>
+              </div>
+              <p class="lbl hint muted bob"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 4v16M5 13l7 7 7-7" /></svg><span data-t="hint">Role para mergulhar — cada O é uma porta</span></p>
+            </section>
+          </div>
+        </div>
+
+        <!-- 01 · About -->
+        <div class="world" data-theme="about">
+          <div class="content">
+            <div class="lvl stack" style="gap: var(--space-9); padding-bottom: 40px">
+              <header class="lvl-head lbl"><span data-t="h1">Nível 01 — Sobre</span><span>−250 m</span></header>
+              <h2 class="h2" style="--len: 5" data-t-len="w1" aria-label="Sobre" data-t-aria="n1"><span data-t="w1.a">S</span><span class="o"></span><span data-t="w1.b">BRE</span></h2>
+              <p class="statement" data-t="statement">Construo storefronts Shopify escaláveis e de alta conversão — de temas Liquid sob medida a Shopify Functions, Extensions e integrações profundas de API.</p>
+              <div class="split">
+                <p class="body" data-t="bio">Sou Mateo Calazans, desenvolvedor Shopify natural de Natal, Brasil. Me importo obsessivamente com performance, código limpo e execução pixel-perfect.</p>
+                <div class="facts">
+                  <div class="fact"><span class="num">3+</span><span class="lbl" data-t="f1">Anos de experiência</span></div>
+                  <div class="fact"><span class="num">10+</span><span class="lbl" data-t="f2">Lojas entregues</span></div>
+                  <div class="fact"><span class="num">UFRN</span><span class="lbl" data-t="f3">Formado em ADS</span></div>
+                </div>
+              </div>
+              <article class="card">
+                <span class="lbl" data-t="eduLbl">Formação</span>
+                <h3 class="h3" data-t="degree">Graduação Tecnológica em Análise e Desenvolvimento de Sistemas</h3>
+                <span class="school" data-t="school">Universidade Federal do Rio Grande do Norte (UFRN)</span>
+                <p class="body" data-t="eduDesc">Programa abrangente cobrindo engenharia de software, algoritmos, estruturas de dados, bancos de dados e práticas modernas de desenvolvimento web.</p>
+              </article>
+            </div>
+            <div class="pline">
+              <span class="lbl"><span data-t="next">Próximo nível</span> · 02 · −500 m</span>
+              <span class="pword" style="--len: 6" data-t-len="w2"><span data-t="w2.a">C</span><button class="portal" type="button" data-go="2" aria-label="Mergulhar: Código" data-t-aria="dive2"></button><span data-t="w2.b">DIGO</span></span>
+              <span class="lbl bob" data-t="keep">↓ Continue rolando para mergulhar</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 02 · Code -->
+        <div class="world" data-theme="code">
+          <div class="content">
+            <div class="stack" style="gap: var(--space-9); padding-bottom: 40px">
+              <div class="lvl stack" style="gap: clamp(24px, 3vw, 40px)">
+                <header class="lvl-head lbl"><span data-t="h2">Nível 02 — Habilidades</span><span>−500 m</span></header>
+                <h2 class="h2" style="--len: 6" data-t-len="w2" aria-label="Código" data-t-aria="n2"><span data-t="w2.a">C</span><span class="o"></span><span data-t="w2.b">DIGO</span></h2>
+                <p class="statement statement--wide" data-t="stackLine">A stack técnica por trás de cada loja.</p>
+              </div>
+              <div class="marquee-wrap" aria-hidden="true">
+                <div class="marquee">
+                  <span>Liquid</span><span>/</span><span>JavaScript</span><span>/</span><span>TypeScript</span><span>/</span><span>Shopify</span><span>/</span><span>React</span><span>/</span><span>Node.js</span><span>/</span><span>Shopify Functions</span><span>/</span><span>Extensions</span><span>/</span><span>Metaobjects</span><span>/</span><span>SEO</span><span>/</span><span>CRO</span><span>/</span><span>Shopify APIs</span><span>/</span><span>Git</span><span>/</span>
+                  <span>Liquid</span><span>/</span><span>JavaScript</span><span>/</span><span>TypeScript</span><span>/</span><span>Shopify</span><span>/</span><span>React</span><span>/</span><span>Node.js</span><span>/</span><span>Shopify Functions</span><span>/</span><span>Extensions</span><span>/</span><span>Metaobjects</span><span>/</span><span>SEO</span><span>/</span><span>CRO</span><span>/</span><span>Shopify APIs</span><span>/</span><span>Git</span><span>/</span>
+                </div>
+              </div>
+              <div class="lvl groups">
+                <div class="group">
+                  <span class="lbl" data-t="g1">01 · Ecossistema Shopify</span>
+                  <ul><li>Liquid<span class="tag">.liquid</span></li><li>Shopify CLI</li><li>Theme Architecture</li><li>Shopify Functions</li><li>Extensions</li><li>Metaobjects</li><li>Storefront API</li></ul>
+                </div>
+                <div class="group">
+                  <span class="lbl" data-t="g2">02 · Frontend</span>
+                  <ul><li>JavaScript</li><li>TypeScript</li><li>React</li><li>HTML5</li><li>CSS3</li><li>Tailwind</li><li>Responsive Design</li></ul>
+                </div>
+                <div class="group">
+                  <span class="lbl" data-t="g3">03 · Performance &amp; Crescimento</span>
+                  <ul><li>Core Web Vitals</li><li>CRO</li><li>SEO</li><li data-t="a11y">Acessibilidade</li><li data-t="thirdParty">Integrações de terceiros</li></ul>
+                </div>
+              </div>
+            </div>
+            <div class="pline">
+              <span class="lbl"><span data-t="next">Próximo nível</span> · 03 · −750 m</span>
+              <span class="pword" style="--len: 10" data-t-len="w3"><span data-t="w3.a">TRAJET</span><button class="portal" type="button" data-go="3" aria-label="Mergulhar: Trajetória" data-t-aria="dive3"></button><span data-t="w3.b">RIA</span></span>
+              <span class="lbl bob" data-t="keep">↓ Continue rolando para mergulhar</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 03 · Journey -->
+        <div class="world" data-theme="journey">
+          <div class="content">
+            <div class="lvl stack" style="gap: clamp(40px, 6vw, 72px); padding-bottom: 40px">
+              <header class="lvl-head lbl"><span data-t="h3">Nível 03 — Trajetória</span><span>−750 m</span></header>
+              <div class="stack" style="gap: 18px">
+                <h2 class="h2" style="--len: 10" data-t-len="w3" aria-label="Trajetória" data-t-aria="n3"><span data-t="w3.a">TRAJET</span><span class="o"></span><span data-t="w3.b">RIA</span></h2>
+                <p class="statement statement--wide" data-t="workLine">Empresas e lojas em que trabalhei.</p>
+              </div>
+              <div class="projs">
+                <article class="proj">
+                  <div class="vis vis--esmart"><span class="lbl vis-lbl">E-smart Capitais</span><span class="initial" aria-hidden="true">E</span></div>
+                  <div class="ptxt">
+                    <span class="lbl" data-t="c1cat">01 — Storefronts para múltiplas marcas</span>
+                    <h3 class="h3 pname">E-smart Capitais</h3>
+                    <p class="body" data-t="c1">Manutenção e escalabilidade de storefronts para múltiplas marcas, melhorando performance e acessibilidade, e desenvolvendo funcionalidades customizadas com Shopify Functions e Extensions.</p>
+                    <ul class="chips"><li>Shopify Functions</li><li>Extensions</li><li>Performance</li><li data-t="a11y">Acessibilidade</li></ul>
+                  </div>
+                </article>
+                <article class="proj">
+                  <div class="vis vis--casemate"><span class="lbl vis-lbl">case-mate.com</span><span class="initial" aria-hidden="true">C</span></div>
+                  <div class="ptxt">
+                    <span class="lbl" data-t="c2cat">02 — Capas &amp; acessórios</span>
+                    <h3 class="h3 pname">Case Mate</h3>
+                    <p class="body" data-t="c2">Capas premium para celular e acessórios. Desenvolvimento e otimização do tema com foco em performance, responsividade e conversão, com funcionalidades avançadas de CRO.</p>
+                    <ul class="chips"><li data-t="customTheme">Tema customizado</li><li>CRO</li><li>Performance</li></ul>
+                    <a class="btn" href="https://case-mate.com/" target="_blank" rel="noopener" data-t="visit">Visitar loja ↗</a>
+                  </div>
+                </article>
+                <article class="proj">
+                  <div class="vis vis--organifi"><span class="lbl vis-lbl">organifi.com</span><span class="initial" aria-hidden="true">O</span></div>
+                  <div class="ptxt">
+                    <span class="lbl" data-t="c3cat">03 — Saúde &amp; bem-estar</span>
+                    <h3 class="h3 pname">Organifi</h3>
+                    <p class="body" data-t="c3">Marca de saúde e bem-estar. Tema Liquid focado em performance e SEO/CRO, com conteúdo gerenciado por metaobjects e integração de apps de terceiros.</p>
+                    <ul class="chips"><li>Liquid</li><li>Metaobjects</li><li>SEO / CRO</li></ul>
+                    <a class="btn" href="https://www.organifi.com/" target="_blank" rel="noopener" data-t="visit">Visitar loja ↗</a>
+                  </div>
+                </article>
+                <article class="proj">
+                  <div class="vis vis--factor"><span class="lbl vis-lbl">factorform.com</span><span class="initial" aria-hidden="true">F</span></div>
+                  <div class="ptxt">
+                    <span class="lbl" data-t="c4cat">04 — Suplementos</span>
+                    <h3 class="h3 pname">Factor Form</h3>
+                    <p class="body" data-t="c4">Marca de suplementos criada pelo time da Factor Meals: greens, shakes, creatina e proteína.</p>
+                    <ul class="chips"><li>Shopify</li></ul>
+                    <a class="btn" href="https://www.factorform.com/" target="_blank" rel="noopener" data-t="visit">Visitar loja ↗</a>
+                  </div>
+                </article>
+                <article class="proj">
+                  <div class="vis vis--mio"><img src="/src/assets/mio-geek.png" alt="Mio Geek" width="300" height="256" loading="lazy" decoding="async" /></div>
+                  <div class="ptxt">
+                    <span class="lbl" data-t="c5cat">05 — Loja própria</span>
+                    <h3 class="h3 pname">Mio Geek</h3>
+                    <span class="badge lbl"><span class="pulse"></span><span data-t="inDev">Em desenvolvimento</span></span>
+                    <p class="body" data-t="c5">Minha loja de RPG, miniaturas e cultura geek. O cliente envia uma foto e a IA gera o personagem em 3D para impressão.</p>
+                    <ul class="chips"><li data-t="ownStore">Loja própria</li><li>Shopify</li><li data-t="ai3d">IA + impressão 3D</li></ul>
+                  </div>
+                </article>
+              </div>
+            </div>
+            <div class="pline">
+              <span class="lbl"><span data-t="last">Último nível</span> · 04 · −1000 m</span>
+              <span class="pword" style="--len: 7" data-t-len="w4"><span data-t="w4.a">C</span><button class="portal" type="button" data-go="4" aria-label="Mergulhar: Contato" data-t-aria="dive4"></button><span data-t="w4.b">NTATO</span></span>
+              <span class="lbl bob" data-t="keep">↓ Continue rolando para mergulhar</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 04 · Contact -->
+        <div class="world" data-theme="contact">
+          <div class="content">
+            <div class="lvl stack" style="gap: clamp(36px, 5vw, 64px); padding-bottom: 40px">
+              <header class="lvl-head lbl"><span data-t="h4">Nível 04 — Contato</span><span data-t="bottom">−1000 m · o fundo</span></header>
+              <h2 class="h2" style="--len: 7" data-t-len="w4" aria-label="Contato" data-t-aria="n4"><span data-t="w4.a">C</span><span class="o"></span><span data-t="w4.b">NTATO</span></h2>
+              <div class="stack" style="gap: 14px">
+                <p class="statement statement--narrow" data-t="together">Vamos trabalhar juntos.</p>
+                <p class="body" data-t="together2">Tem um projeto em mente? Adoraria saber mais.</p>
+              </div>
+              <div class="split">
+                <div class="stack" style="gap: 24px">
+                  <ul class="contacts">
+                    <li><a href="mailto:maateodtc@gmail.com"><span class="contact-value">maateodtc@gmail.com</span><span class="lbl">E-mail <span class="arr">↗</span></span></a></li>
+                    <li><a href="https://wa.me/5584998180368" target="_blank" rel="noopener"><span class="contact-value">+55 (84) 99818-0368</span><span class="lbl">WhatsApp <span class="arr">↗</span></span></a></li>
+                    <li><a href="https://www.linkedin.com/in/mateocalazans/" target="_blank" rel="noopener"><span class="contact-value">in/mateocalazans</span><span class="lbl">LinkedIn <span class="arr">↗</span></span></a></li>
+                    <li><a href="https://github.com/MateoCalazans" target="_blank" rel="noopener"><span class="contact-value">MateoCalazans</span><span class="lbl">GitHub <span class="arr">↗</span></span></a></li>
+                    <li><a href="https://www.instagram.com/mateocalazans/" target="_blank" rel="noopener"><span class="contact-value">@mateocalazans</span><span class="lbl">Instagram <span class="arr">↗</span></span></a></li>
+                  </ul>
+                  <a class="btn btn--solid btn--start" href="/resume.pdf" download="Mateo_Calazans_CV.pdf" data-t="cv">Baixar CV ↓</a>
+                </div>
+                <form class="form" data-mailto="maateodtc@gmail.com">
+                  <label class="flabel"><span class="lbl" data-t="fName">Nome</span><input class="field" type="text" name="name" autocomplete="name" required /></label>
+                  <label class="flabel"><span class="lbl" data-t="fEmail">E-mail</span><input class="field" type="email" name="email" autocomplete="email" required /></label>
+                  <label class="flabel"><span class="lbl" data-t="fMsg">Mensagem</span><textarea class="field" name="message" rows="5" required></textarea></label>
+                  <button class="btn btn--solid btn--start" type="submit" data-t="send">Enviar mensagem</button>
+                </form>
+              </div>
+              <footer class="footer">
+                <button class="btn" type="button" data-go="0" data-t="back">↑ Voltar à superfície</button>
+                <span class="lbl" data-t="foot">© 2026 Mateo Calazans · Natal, Brasil</span>
+              </footer>
+            </div>
+          </div>
+        </div>
+
+        <nav class="hud" aria-label="Níveis" data-t-aria="levelsAria">
+          <div class="lang" role="group" aria-label="Idioma / Language">
+            <button class="lg" type="button" data-lang="pt" aria-pressed="true">PT</button>
+            <button class="lg" type="button" data-lang="en" aria-pressed="false">EN</button>
+          </div>
+          <span class="hud-div" aria-hidden="true"></span>
+          <div class="stops">
+            <button class="stop" type="button" data-go="0" aria-label="Ir para Superfície" aria-current="true"><span class="sdot"></span><span class="stop-label" aria-hidden="true">00 <span data-t="stops.0">Superfície</span></span></button>
+            <button class="stop" type="button" data-go="1" aria-label="Ir para Sobre"><span class="sdot"></span><span class="stop-label" aria-hidden="true">01 <span data-t="stops.1">Sobre</span></span></button>
+            <button class="stop" type="button" data-go="2" aria-label="Ir para Código"><span class="sdot"></span><span class="stop-label" aria-hidden="true">02 <span data-t="stops.2">Código</span></span></button>
+            <button class="stop" type="button" data-go="3" aria-label="Ir para Trajetória"><span class="sdot"></span><span class="stop-label" aria-hidden="true">03 <span data-t="stops.3">Trajetória</span></span></button>
+            <button class="stop" type="button" data-go="4" aria-label="Ir para Contato"><span class="sdot"></span><span class="stop-label" aria-hidden="true">04 <span data-t="stops.4">Contato</span></span></button>
+          </div>
+          <div class="depth" aria-hidden="true"><span data-t="depth">PROFUNDIDADE</span> −<span data-depth>0000</span> M</div>
+        </nav>
+
+      </div>
+    </div>
   </body>
 </html>

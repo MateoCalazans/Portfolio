@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Mergulho — Mateo Calazans</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300..900&family=Instrument+Sans:wght@400..700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+body{margin:0;background:#0E0E0C}
+a{color:inherit;text-decoration:none}
+.root{--gx:clamp(20px,4vw,56px);--gr:clamp(64px,7vw,104px);position:relative;font-family:'Instrument Sans',system-ui,sans-serif}
+.stage{position:sticky;top:0;height:100vh;min-height:520px;overflow:hidden}
+.world{position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden;transform-origin:0 0}
+.content{position:relative;width:100%}
+.disp{font-family:'Unbounded','Arial Black',sans-serif}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+.lbl{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.lvl{padding:0 var(--gr) 0 var(--gx);box-sizing:border-box}
+.lvl-head{display:flex;justify-content:space-between;gap:16px;padding:32px 0 0}
+.h2{margin:0;font-family:'Unbounded',sans-serif;font-weight:800;line-height:.9;letter-spacing:-.045em;white-space:nowrap;font-size:min(calc(80vw / (var(--len) * .95)),22vh)}
+.o{display:inline-block;width:.74em;height:.74em;margin:0 .03em;border-radius:50%;border:.13em solid currentColor;box-sizing:border-box;vertical-align:-.005em}
+.portal{display:inline-block;width:.74em;height:.74em;border:0;padding:0;margin:0 .03em;border-radius:50%;vertical-align:-.005em;cursor:zoom-in;font:inherit;box-shadow:0 0 0 0 currentColor;transition:box-shadow .4s cubic-bezier(.2,.8,.1,1)}
+.portal:hover,.portal:focus-visible{box-shadow:0 0 0 .05em currentColor;outline:none}
+.pline{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;text-align:center;padding:0 var(--gr) 0 var(--gx);box-sizing:border-box}
+.pword{font-family:'Unbounded',sans-serif;font-weight:800;letter-spacing:-.045em;line-height:.9;white-space:nowrap;font-size:min(calc(84vw / (var(--len) * .95)),22vh)}
+.bob{animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+.statement{margin:0;font-family:'Unbounded',sans-serif;font-weight:500;font-size:clamp(22px,3.3vw,46px);line-height:1.15;letter-spacing:-.025em;text-wrap:pretty;max-width:22ch}
+.body{margin:0;font-size:clamp(17px,1.5vw,21px);line-height:1.55;max-width:56ch;text-wrap:pretty}
+.split{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:clamp(32px,5vw,72px);align-items:start}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:24px}
+.fact{display:flex;flex-direction:column;gap:8px;border-top:1.5px solid currentColor;padding-top:14px}
+.num{font-family:'Unbounded',sans-serif;font-weight:800;font-size:clamp(40px,5.4vw,76px);line-height:.9;letter-spacing:-.05em}
+.card{border:1.5px solid currentColor;border-radius:28px;padding:clamp(22px,3vw,40px);display:flex;flex-direction:column;gap:14px}
+.h3{margin:0;font-family:'Unbounded',sans-serif;font-weight:700;font-size:clamp(22px,2.4vw,34px);line-height:1.08;letter-spacing:-.03em}
+.marquee-wrap{overflow:hidden;border-top:1.5px solid currentColor;border-bottom:1.5px solid currentColor;padding:18px 0}
+.marquee{display:flex;gap:40px;width:max-content;animation:mq 34s linear infinite;font-family:'Unbounded',sans-serif;font-weight:700;font-size:clamp(26px,3.4vw,48px);letter-spacing:-.03em;white-space:nowrap}
+@keyframes mq{to{transform:translateX(-50%)}}
+.groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:clamp(28px,4vw,56px)}
+.group ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.group li{display:flex;justify-content:space-between;gap:12px;align-items:baseline;border-bottom:1px solid rgba(14,14,12,.25);padding:12px 0;font-size:clamp(18px,1.6vw,22px);font-weight:500}
+.badge{display:inline-flex;align-items:center;gap:8px;border:1.5px solid currentColor;border-radius:99px;padding:6px 12px}
+.pulse{width:8px;height:8px;border-radius:50%;background:currentColor;animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.25}}
+.projs{display:flex;flex-direction:column;gap:clamp(48px,7vw,96px)}
+.proj{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr));gap:clamp(24px,4vw,56px);align-items:center}
+.vis{position:relative;aspect-ratio:4/3;border-radius:28px;overflow:hidden}
+.vis-lbl{position:absolute;left:22px;top:20px}
+.initial{position:absolute;right:-.04em;bottom:-.2em;font-family:'Unbounded',sans-serif;font-weight:800;font-size:clamp(220px,30vw,440px);line-height:1;letter-spacing:-.06em}
+.ptxt{display:flex;flex-direction:column;gap:16px;align-items:flex-start}
+.pname{font-size:clamp(32px,4vw,56px)}
+.chips{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.chips li{border:1.5px solid currentColor;border-radius:99px;padding:7px 13px;font-size:14px;font-weight:500}
+@media (min-width:900px){.proj:nth-child(even) .vis{order:2}}
+.btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 24px;border:1.5px solid currentColor;border-radius:99px;font-family:'Instrument Sans',sans-serif;font-size:16px;font-weight:600;transition:transform .3s cubic-bezier(.2,.8,.1,1)}
+.btn:hover{transform:translateY(-2px)}
+.btn:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+.contacts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.contacts a{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;border-top:1.5px solid currentColor;padding:18px 0;font-size:clamp(18px,1.9vw,26px);font-weight:600;letter-spacing:-.01em}
+.contacts a:hover .arr{transform:translate(4px,-4px)}
+.arr{display:inline-block;transition:transform .3s}
+.field{display:block;width:100%;box-sizing:border-box;min-height:54px;border:1.5px solid currentColor;border-radius:16px;background:transparent;padding:14px 16px;font:inherit;font-size:16px;color:inherit}
+.field:focus{outline:2px solid currentColor;outline-offset:2px}
+.flabel{display:flex;flex-direction:column;gap:8px}
+.caret{display:inline-block;width:.08em;height:.9em;background:currentColor;margin-left:.06em;vertical-align:-.08em;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.toplinks{display:flex;gap:6px;flex-wrap:wrap}
+.tl{all:unset;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.04em;padding:10px 12px;border-radius:99px}
+.tl:hover{background:rgba(237,232,221,.12)}
+.tl:focus-visible{outline:1px solid currentColor}
+.hud{position:absolute;right:14px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;border-radius:99px;background:rgba(14,14,12,.74);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 0 0 1px rgba(237,232,221,.16);color:#EDE8DD;z-index:5}
+.hud-div{width:14px;height:1px;background:rgba(237,232,221,.3);margin:4px 0}
+.stops{display:flex;flex-direction:column;align-items:center}
+.stop{all:unset;position:relative;cursor:pointer;width:32px;height:30px;display:grid;place-items:center;transition:opacity .3s}
+.stop:focus-visible,.lg:focus-visible{outline:1px solid #EDE8DD;outline-offset:-2px;border-radius:99px}
+.sdot{width:8px;height:8px;border-radius:50%;border:1.5px solid currentColor;box-sizing:border-box}
+.stop-label{position:absolute;right:calc(100% + 12px);top:50%;transform:translate(4px,-50%);white-space:nowrap;background:rgba(14,14,12,.9);color:#EDE8DD;padding:6px 10px;border-radius:99px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
+.stop:hover .stop-label,.stop:focus-visible .stop-label{opacity:1;transform:translate(0,-50%)}
+.depth{writing-mode:vertical-rl;transform:rotate(180deg);margin:6px 0 2px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;white-space:nowrap;opacity:.75;pointer-events:none}
+.lang{display:flex;flex-direction:column;align-items:center}
+.lg{all:unset;cursor:pointer;width:32px;height:28px;display:grid;place-items:center;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;transition:opacity .3s}
+@media (max-width:760px){.toplinks{display:none}.depth{display:none}.hud{right:8px}.root{--gr:52px}}
+@media (prefers-reduced-motion: reduce){.marquee,.bob,.pulse,.caret{animation:none}}
+</style>
+</helmet>
+<div ref="{{setRoot}}" class="root" style="--acc: {{accent}}; background: #0E0E0C">
+<div ref="{{setStage}}" class="stage">
+
+<div ref="{{setW0}}" class="world" style="background: #0E0E0C; color: #EDE8DD">
+<div ref="{{setC0}}" class="content">
+<section style="min-height: 100vh; box-sizing: border-box; padding: 24px var(--gr) 30px var(--gx); display: flex; flex-direction: column; justify-content: space-between; gap: 28px">
+<header style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center">
+<span class="disp" style="font-weight: 800; font-size: 20px; letter-spacing: -.04em">MC<span style="color: var(--acc)">.</span> <span class="mono" style="font-weight: 400; font-size: 13px; letter-spacing: 0">mateo.dev</span></span>
+<nav class="toplinks" aria-label="{{t.navAria}}">
+<button class="tl" onClick="{{go1}}">{{t.n1}}</button>
+<button class="tl" onClick="{{go2}}">{{t.n2}}</button>
+<button class="tl" onClick="{{go3}}">{{t.n3}}</button>
+<button class="tl" onClick="{{go4}}">{{t.n4}}</button>
+</nav>
+<a href="#" class="btn" style="min-height: 44px; padding: 0 18px; font-size: 14px">{{t.cv}}</a>
+</header>
+<div style="display: flex; flex-direction: column; gap: 20px">
+<span class="lbl" style="display: flex; align-items: center; gap: 10px; color: var(--acc)"><span class="pulse"></span>{{t.status}}</span>
+<h1 aria-label="Mateo Calazans" class="disp" style="margin: 0; font-weight: 800; font-size: min(16.5vw, 27vh); line-height: .88; letter-spacing: -.05em; display: flex; flex-direction: column">
+<span style="white-space: nowrap">MATE<button ref="{{setP0}}" class="portal" onClick="{{go1}}" aria-label="{{t.dive1}}" style="background: var(--acc)"></button></span>
+<span style="font-size: .42em; font-weight: 300; letter-spacing: .01em; padding-left: .06em">CALAZANS</span>
+</h1>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 24px 48px; justify-content: space-between; align-items: flex-end">
+<div style="display: flex; flex-direction: column; gap: 12px; max-width: 560px">
+<p class="disp" style="margin: 0; font-weight: 600; font-size: clamp(22px, 2.6vw, 36px); letter-spacing: -.03em">Theme Architect.<span class="caret"></span></p>
+<p class="body" style="color: #CFC9BC">{{t.tagline}}</p>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<button class="btn" onClick="{{go3}}" style="background: #EDE8DD; color: #0E0E0C; border-color: #EDE8DD">{{t.ctaWork}}</button>
+<button class="btn" onClick="{{go4}}">{{t.ctaContact}}</button>
+</div>
+</div>
+<p class="lbl bob" style="margin: 0; display: flex; align-items: center; gap: 10px; color: #CFC9BC"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 4v16M5 13l7 7 7-7"></path></svg>{{t.hint}}</p>
+</section>
+</div>
+</div>
+
+<div ref="{{setW1}}" class="world" style="visibility: hidden; background: var(--acc); color: #0E0E0C">
+<div ref="{{setC1}}" class="content">
+<div class="lvl" style="display: flex; flex-direction: column; gap: clamp(40px, 6vw, 80px); padding-bottom: 40px">
+<header class="lvl-head lbl"><span>{{t.h1}}</span><span>−250 m</span></header>
+<h2 class="h2" style="--len: {{t.w1.len}}">{{t.w1.a}}<span class="o"></span>{{t.w1.b}}</h2>
+<p class="statement">{{t.statement}}</p>
+<div class="split">
+<p class="body">{{t.bio}}</p>
+<div class="facts">
+<div class="fact"><span class="num">3+</span><span class="lbl">{{t.f1}}</span></div>
+<div class="fact"><span class="num">10+</span><span class="lbl">{{t.f2}}</span></div>
+<div class="fact"><span class="num">UFRN</span><span class="lbl">{{t.f3}}</span></div>
+</div>
+</div>
+<article class="card">
+<span class="lbl">{{t.eduLbl}}</span>
+<h3 class="h3">{{t.degree}}</h3>
+<span class="mono" style="font-size: 14px">{{t.school}}</span>
+<p class="body">{{t.eduDesc}}</p>
+</article>
+</div>
+<div class="pline">
+<span class="lbl">{{t.next}} · 02 · −500 m</span>
+<span class="pword" style="--len: {{t.w2.len}}">{{t.w2.a}}<button ref="{{setP1}}" class="portal" onClick="{{go2}}" aria-label="{{t.dive2}}" style="background: #EDE8DD"></button>{{t.w2.b}}</span>
+<span class="lbl bob">{{t.keep}}</span>
+</div>
+</div>
+</div>
+
+<div ref="{{setW2}}" class="world" style="visibility: hidden; background: #EDE8DD; color: #0E0E0C">
+<div ref="{{setC2}}" class="content">
+<div style="display: flex; flex-direction: column; gap: clamp(40px, 6vw, 80px); padding-bottom: 40px">
+<div class="lvl" style="display: flex; flex-direction: column; gap: clamp(24px, 3vw, 40px)">
+<header class="lvl-head lbl"><span>{{t.h2}}</span><span>−500 m</span></header>
+<h2 class="h2" style="--len: {{t.w2.len}}">{{t.w2.a}}<span class="o"></span>{{t.w2.b}}</h2>
+<p class="statement" style="max-width: 26ch">{{t.stackLine}}</p>
+</div>
+<div class="marquee-wrap" aria-hidden="true">
+<div class="marquee">
+<span>Liquid</span><span>/</span><span>JavaScript</span><span>/</span><span>TypeScript</span><span>/</span><span>Shopify</span><span>/</span><span>React</span><span>/</span><span>Node.js</span><span>/</span><span>Shopify Functions</span><span>/</span><span>Extensions</span><span>/</span><span>Metaobjects</span><span>/</span><span>SEO</span><span>/</span><span>CRO</span><span>/</span><span>Shopify APIs</span><span>/</span><span>Git</span><span>/</span>
+<span>Liquid</span><span>/</span><span>JavaScript</span><span>/</span><span>TypeScript</span><span>/</span><span>Shopify</span><span>/</span><span>React</span><span>/</span><span>Node.js</span><span>/</span><span>Shopify Functions</span><span>/</span><span>Extensions</span><span>/</span><span>Metaobjects</span><span>/</span><span>SEO</span><span>/</span><span>CRO</span><span>/</span><span>Shopify APIs</span><span>/</span><span>Git</span><span>/</span>
+</div>
+</div>
+<div class="lvl groups">
+<div class="group" style="display: flex; flex-direction: column; gap: 16px">
+<span class="lbl">{{t.g1}}</span>
+<ul><li>Liquid<span class="mono" style="font-size: 12px">.liquid</span></li><li>Shopify CLI</li><li>Theme Architecture</li><li>Shopify Functions</li><li>Extensions</li><li>Metaobjects</li><li>Storefront API</li></ul>
+</div>
+<div class="group" style="display: flex; flex-direction: column; gap: 16px">
+<span class="lbl">02 · Frontend</span>
+<ul><li>JavaScript</li><li>TypeScript</li><li>React</li><li>HTML5</li><li>CSS3</li><li>Tailwind</li><li>Responsive Design</li></ul>
+</div>
+<div class="group" style="display: flex; flex-direction: column; gap: 16px">
+<span class="lbl">{{t.g3}}</span>
+<ul><li>Core Web Vitals</li><li>CRO</li><li>SEO</li><li>{{t.a11y}}</li><li>{{t.thirdParty}}</li></ul>
+</div>
+</div>
+</div>
+<div class="pline">
+<span class="lbl">{{t.next}} · 03 · −750 m</span>
+<span class="pword" style="--len: {{t.w3.len}}">{{t.w3.a}}<button ref="{{setP2}}" class="portal" onClick="{{go3}}" aria-label="{{t.dive3}}" style="background: #0E0E0C"></button>{{t.w3.b}}</span>
+<span class="lbl bob">{{t.keep}}</span>
+</div>
+</div>
+</div>
+
+<div ref="{{setW3}}" class="world" style="visibility: hidden; background: #0E0E0C; color: #EDE8DD">
+<div ref="{{setC3}}" class="content">
+<div class="lvl" style="display: flex; flex-direction: column; gap: clamp(40px, 6vw, 72px); padding-bottom: 40px">
+<header class="lvl-head lbl"><span>{{t.h3}}</span><span>−750 m</span></header>
+<div style="display: flex; flex-direction: column; gap: 18px">
+<h2 class="h2" style="--len: {{t.w3.len}}">{{t.w3.a}}<span class="o"></span>{{t.w3.b}}</h2>
+<p class="statement" style="max-width: 26ch">{{t.workLine}}</p>
+</div>
+<div class="projs">
+<article class="proj">
+<div class="vis" style="background: #1F2BFF; color: #F3F1EC"><span class="lbl vis-lbl">E-smart Capitais</span><span class="initial" aria-hidden="true">E</span></div>
+<div class="ptxt">
+<span class="lbl">{{t.c1cat}}</span>
+<h3 class="h3 pname">E-smart Capitais</h3>
+<p class="body">{{t.c1}}</p>
+<ul class="chips"><li>Shopify Functions</li><li>Extensions</li><li>Performance</li><li>{{t.a11y}}</li></ul>
+</div>
+</article>
+<article class="proj">
+<div class="vis" style="background: var(--acc); color: #0E0E0C"><span class="lbl vis-lbl">case-mate.com</span><span class="initial" aria-hidden="true">C</span></div>
+<div class="ptxt">
+<span class="lbl">{{t.c2cat}}</span>
+<h3 class="h3 pname">Case Mate</h3>
+<p class="body">{{t.c2}}</p>
+<ul class="chips"><li>{{t.customTheme}}</li><li>CRO</li><li>Performance</li></ul>
+<a class="btn" href="https://case-mate.com/" target="_blank" rel="noopener">{{t.visit}}</a>
+</div>
+</article>
+<article class="proj">
+<div class="vis" style="background: #2F6B3A; color: #DDEFC9"><span class="lbl vis-lbl">organifi.com</span><span class="initial" aria-hidden="true">O</span></div>
+<div class="ptxt">
+<span class="lbl">{{t.c3cat}}</span>
+<h3 class="h3 pname">Organifi</h3>
+<p class="body">{{t.c3}}</p>
+<ul class="chips"><li>Liquid</li><li>Metaobjects</li><li>SEO / CRO</li></ul>
+<a class="btn" href="https://www.organifi.com/" target="_blank" rel="noopener">{{t.visit}}</a>
+</div>
+</article>
+<article class="proj">
+<div class="vis" style="background: #EDE8DD; color: #0E0E0C"><span class="lbl vis-lbl">factorform.com</span><span class="initial" aria-hidden="true">F</span></div>
+<div class="ptxt">
+<span class="lbl">{{t.c4cat}}</span>
+<h3 class="h3 pname">Factor Form</h3>
+<p class="body">{{t.c4}}</p>
+<ul class="chips"><li>Shopify</li></ul>
+<a class="btn" href="https://www.factorform.com/" target="_blank" rel="noopener">{{t.visit}}</a>
+</div>
+</article>
+<article class="proj">
+<div class="vis" style="background: #F2EDE4; display: grid; place-items: center"><img src="../assets/mio-geek.png" alt="Mio Geek" style="width: 58%; height: auto; mix-blend-mode: multiply"></div>
+<div class="ptxt">
+<span class="lbl">{{t.c5cat}}</span>
+<h3 class="h3 pname">Mio Geek</h3>
+<span class="badge lbl" style="color: var(--acc)"><span class="pulse"></span>{{t.inDev}}</span>
+<p class="body">{{t.c5}}</p>
+<ul class="chips"><li>{{t.ownStore}}</li><li>Shopify</li><li>{{t.ai3d}}</li></ul>
+</div>
+</article>
+</div>
+</div>
+<div class="pline">
+<span class="lbl">{{t.last}} · 04 · −1000 m</span>
+<span class="pword" style="--len: {{t.w4.len}}">{{t.w4.a}}<button ref="{{setP3}}" class="portal" onClick="{{go4}}" aria-label="{{t.dive4}}" style="background: #C8F25A"></button>{{t.w4.b}}</span>
+<span class="lbl bob">{{t.keep}}</span>
+</div>
+</div>
+</div>
+
+<div ref="{{setW4}}" class="world" style="visibility: hidden; background: #C8F25A; color: #0E0E0C">
+<div ref="{{setC4}}" class="content">
+<div class="lvl" style="display: flex; flex-direction: column; gap: clamp(36px, 5vw, 64px); padding-bottom: 40px">
+<header class="lvl-head lbl"><span>{{t.h4}}</span><span>{{t.bottom}}</span></header>
+<h2 class="h2" style="--len: {{t.w4.len}}">{{t.w4.a}}<span class="o"></span>{{t.w4.b}}</h2>
+<div style="display: flex; flex-direction: column; gap: 14px">
+<p class="statement" style="max-width: 18ch">{{t.together}}</p>
+<p class="body">{{t.together2}}</p>
+</div>
+<div class="split">
+<div style="display: flex; flex-direction: column; gap: 24px">
+<ul class="contacts">
+<li><a href="mailto:maateodtc@gmail.com"><span>maateodtc@gmail.com</span><span class="lbl">E-mail <span class="arr">↗</span></span></a></li>
+<li><a href="https://wa.me/5584998180368" target="_blank" rel="noopener"><span>+55 (84) 99818-0368</span><span class="lbl">WhatsApp <span class="arr">↗</span></span></a></li>
+<li><a href="https://www.linkedin.com/in/mateocalazans/" target="_blank" rel="noopener"><span>in/mateocalazans</span><span class="lbl">LinkedIn <span class="arr">↗</span></span></a></li>
+<li><a href="https://github.com/MateoCalazans" target="_blank" rel="noopener"><span>MateoCalazans</span><span class="lbl">GitHub <span class="arr">↗</span></span></a></li>
+<li style="border-bottom: 1.5px solid currentColor"><a href="https://www.instagram.com/mateocalazans/" target="_blank" rel="noopener"><span>@mateocalazans</span><span class="lbl">Instagram <span class="arr">↗</span></span></a></li>
+</ul>
+<a href="#" class="btn" style="align-self: flex-start; background: #0E0E0C; color: #C8F25A; border-color: #0E0E0C">{{t.cv}}</a>
+</div>
+<form style="display: flex; flex-direction: column; gap: 16px">
+<label class="flabel"><span class="lbl">{{t.fName}}</span><input class="field" type="text" name="name" autocomplete="name"></label>
+<label class="flabel"><span class="lbl">E-mail</span><input class="field" type="email" name="email" autocomplete="email"></label>
+<label class="flabel"><span class="lbl">{{t.fMsg}}</span><textarea class="field" name="message" rows="5" style="resize: vertical"></textarea></label>
+<button class="btn" type="button" style="align-self: flex-start; background: #0E0E0C; color: #C8F25A; border-color: #0E0E0C">{{t.send}}</button>
+</form>
+</div>
+<footer style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center; border-top: 1.5px solid currentColor; padding-top: 24px">
+<button class="btn" onClick="{{go0}}">{{t.back}}</button>
+<span class="lbl">{{t.foot}}</span>
+</footer>
+</div>
+</div>
+</div>
+
+<nav class="hud" aria-label="{{t.levelsAria}}">
+<div class="lang" role="group" aria-label="Idioma / Language">
+<button class="lg" onClick="{{setPT}}" aria-pressed="{{ptOn}}" style="opacity: {{ptOp}}">PT</button>
+<button class="lg" onClick="{{setEN}}" aria-pressed="{{enOn}}" style="opacity: {{enOp}}">EN</button>
+</div>
+<span class="hud-div" aria-hidden="true"></span>
+<div class="stops">
+<sc-for list="{{stops}}" as="s" hint-placeholder-count="5">
+<button class="stop" onClick="{{s.go}}" style="opacity: {{s.op}}" aria-label="{{s.aria}}"><span class="sdot" style="background: {{s.fill}}"></span><span class="stop-label" aria-hidden="true">{{s.num}} {{s.label}}</span></button>
+</sc-for>
+</div>
+<div class="depth" aria-hidden="true">{{t.depth}} −<span ref="{{setDepth}}">0000</span> M</div>
+</nav>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#FF4F1A","options":["#FF4F1A","#FF9EC7","#FFD23F","#7DA7FF"]},"lang":{"editor":"enum","options":["auto","pt","en"],"default":"auto"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  static i18n() { return {
+  pt: {
+    navAria: 'Seções', n1: 'Sobre', n2: 'Código', n3: 'Trajetória', n4: 'Contato',
+    cv: 'Baixar CV ↓', status: 'Disponível para trabalho',
+    tagline: 'Criando storefronts Shopify de alta performance que convertem.',
+    ctaWork: 'Ver trajetória', ctaContact: 'Entrar em contato',
+    hint: 'Role para mergulhar — cada O é uma porta',
+    dive1: 'Mergulhar: Sobre', dive2: 'Mergulhar: Código', dive3: 'Mergulhar: Trajetória', dive4: 'Mergulhar: Contato',
+    h1: 'Nível 01 — Sobre', w1: { a: 'S', b: 'BRE', len: 5 },
+    statement: 'Construo storefronts Shopify escaláveis e de alta conversão — de temas Liquid sob medida a Shopify Functions, Extensions e integrações profundas de API.',
+    bio: 'Sou Mateo Calazans, desenvolvedor Shopify natural de Natal, Brasil. Me importo obsessivamente com performance, código limpo e execução pixel-perfect.',
+    f1: 'Anos de experiência', f2: 'Lojas entregues', f3: 'Formado em ADS',
+    eduLbl: 'Formação', degree: 'Graduação Tecnológica em Análise e Desenvolvimento de Sistemas',
+    school: 'Universidade Federal do Rio Grande do Norte (UFRN)',
+    eduDesc: 'Programa abrangente cobrindo engenharia de software, algoritmos, estruturas de dados, bancos de dados e práticas modernas de desenvolvimento web.',
+    next: 'Próximo nível', last: 'Último nível', keep: '↓ Continue rolando para mergulhar',
+    h2: 'Nível 02 — Habilidades', w2: { a: 'C', b: 'DIGO', len: 6 },
+    stackLine: 'A stack técnica por trás de cada loja.',
+    g1: '01 · Ecossistema Shopify', g3: '03 · Performance & Crescimento', a11y: 'Acessibilidade', thirdParty: 'Integrações de terceiros',
+    h3: 'Nível 03 — Trajetória', w3: { a: 'TRAJET', b: 'RIA', len: 10 },
+    workLine: 'Empresas e lojas em que trabalhei.',
+    c1cat: '01 — Storefronts para múltiplas marcas',
+    c1: 'Manutenção e escalabilidade de storefronts para múltiplas marcas, melhorando performance e acessibilidade, e desenvolvendo funcionalidades customizadas com Shopify Functions e Extensions.',
+    c2cat: '02 — Capas & acessórios',
+    c2: 'Capas premium para celular e acessórios. Desenvolvimento e otimização do tema com foco em performance, responsividade e conversão, com funcionalidades avançadas de CRO.',
+    customTheme: 'Tema customizado',
+    c3cat: '03 — Saúde & bem-estar',
+    c3: 'Marca de saúde e bem-estar. Tema Liquid focado em performance e SEO/CRO, com conteúdo gerenciado por metaobjects e integração de apps de terceiros.',
+    c4cat: '04 — Suplementos',
+    c4: 'Marca de suplementos criada pelo time da Factor Meals: greens, shakes, creatina e proteína.',
+    c5cat: '05 — Loja própria', inDev: 'Em desenvolvimento',
+    c5: 'Minha loja de RPG, miniaturas e cultura geek. O cliente envia uma foto e a IA gera o personagem em 3D para impressão.',
+    ownStore: 'Loja própria', ai3d: 'IA + impressão 3D',
+    visit: 'Visitar loja ↗',
+    h4: 'Nível 04 — Contato', w4: { a: 'C', b: 'NTATO', len: 7 }, bottom: '−1000 m · o fundo',
+    together: 'Vamos trabalhar juntos.', together2: 'Tem um projeto em mente? Adoraria saber mais.',
+    fName: 'Nome', fMsg: 'Mensagem', send: 'Enviar mensagem',
+    back: '↑ Voltar à superfície', foot: '© 2026 Mateo Calazans · Natal, Brasil',
+    levelsAria: 'Níveis', depth: 'PROFUNDIDADE', goTo: 'Ir para',
+    stops: ['Superfície', 'Sobre', 'Código', 'Trajetória', 'Contato']
+  },
+  en: {
+    navAria: 'Sections', n1: 'About', n2: 'Code', n3: 'Journey', n4: 'Contact',
+    cv: 'Download CV ↓', status: 'Available for work',
+    tagline: 'Crafting high-performance Shopify storefronts that convert.',
+    ctaWork: 'See my journey', ctaContact: 'Get in touch',
+    hint: 'Scroll to dive — every O is a door',
+    dive1: 'Dive in: About', dive2: 'Dive in: Code', dive3: 'Dive in: Journey', dive4: 'Dive in: Contact',
+    h1: 'Level 01 — About', w1: { a: 'AB', b: 'UT', len: 5 },
+    statement: 'I build scalable, high-converting Shopify storefronts — from custom Liquid themes to Shopify Functions, Extensions and deep API integrations.',
+    bio: "I'm Mateo Calazans, a Shopify developer from Natal, Brazil. I care obsessively about performance, clean code and pixel-perfect execution.",
+    f1: 'Years of experience', f2: 'Stores shipped', f3: 'Systems Analysis grad',
+    eduLbl: 'Education', degree: 'Technology Degree in Systems Analysis and Development',
+    school: 'Federal University of Rio Grande do Norte (UFRN)',
+    eduDesc: 'A comprehensive program covering software engineering, algorithms, data structures, databases and modern web development practices.',
+    next: 'Next level', last: 'Last level', keep: '↓ Keep scrolling to dive',
+    h2: 'Level 02 — Skills', w2: { a: 'C', b: 'DE', len: 4 },
+    stackLine: 'The tech stack behind every store.',
+    g1: '01 · Shopify Ecosystem', g3: '03 · Performance & Growth', a11y: 'Accessibility', thirdParty: 'Third-party integrations',
+    h3: 'Level 03 — Journey', w3: { a: 'J', b: 'URNEY', len: 7 },
+    workLine: "Companies and stores I've worked with.",
+    c1cat: '01 — Storefronts for multiple brands',
+    c1: 'Maintaining and scaling storefronts for multiple brands, improving performance and accessibility, and building custom features with Shopify Functions and Extensions.',
+    c2cat: '02 — Cases & accessories',
+    c2: 'Premium phone cases and accessories. Theme development and optimization focused on performance, responsiveness and conversion, with advanced CRO features.',
+    customTheme: 'Custom theme',
+    c3cat: '03 — Health & wellness',
+    c3: 'Health and wellness brand. Performance and SEO/CRO-focused Liquid theme, with content managed through metaobjects and third-party app integrations.',
+    c4cat: '04 — Supplements',
+    c4: 'Supplement brand from the team behind Factor Meals: greens, shakes, creatine and protein.',
+    c5cat: '05 — My own store', inDev: 'In development',
+    c5: 'My own store for RPG, miniatures and geek culture. Customers send a photo and AI turns it into a 3D character we print.',
+    ownStore: 'Own store', ai3d: 'AI + 3D printing',
+    visit: 'Visit store ↗',
+    h4: 'Level 04 — Contact', w4: { a: 'C', b: 'NTACT', len: 7 }, bottom: '−1000 m · the bottom',
+    together: "Let's work together.", together2: "Have a project in mind? I'd love to hear about it.",
+    fName: 'Name', fMsg: 'Message', send: 'Send message',
+    back: '↑ Back to the surface', foot: '© 2026 Mateo Calazans · Natal, Brazil',
+    levelsAria: 'Levels', depth: 'DEPTH', goTo: 'Go to',
+    stops: ['Surface', 'About', 'Code', 'Journey', 'Contact']
+  }
+}; }
+  constructor(props) {
+    super(props);
+    var self = this;
+    this.N = 5;
+    var lang = 'pt';
+    var p = props && props.lang;
+    if (p === 'pt' || p === 'en') lang = p;
+    else {
+      try { var saved = window.localStorage.getItem('mc-lang'); if (saved === 'pt' || saved === 'en') lang = saved; else if (!/^pt/i.test(navigator.language || 'pt')) lang = 'en'; } catch (e) {}
+    }
+    this.state = { cur: 0, lang: lang };
+    this.W = []; this.C = []; this.P = [];
+    this.m = null;
+    var mk = function (arr, i) { return function (el) { self[arr][i] = el; }; };
+    for (var i = 0; i < this.N; i++) {
+      this['setW' + i] = mk('W', i);
+      this['setC' + i] = mk('C', i);
+      if (i < this.N - 1) this['setP' + i] = mk('P', i);
+      this['go' + i] = (function (k) { return function () { self.jump(k); }; })(i);
+    }
+    this.setRoot = function (el) { self.root = el; };
+    this.setStage = function (el) { self.stage = el; };
+    this.setDepth = function (el) { self.depthEl = el; };
+    this.setPT = function () { self.setLang('pt'); };
+    this.setEN = function () { self.setLang('en'); };
+    this.onScroll = function () {
+      if (self.ticking) return;
+      self.ticking = true;
+      requestAnimationFrame(function () { self.ticking = false; self.update(); });
+    };
+  }
+  setLang(l) {
+    if (l === this.state.lang) return;
+    try { window.localStorage.setItem('mc-lang', l); } catch (e) {}
+    this.keepLevel = this.state.cur;
+    this.setState({ lang: l });
+  }
+  componentDidMount() {
+    var self = this;
+    try { this.reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+    try { document.documentElement.lang = this.state.lang === 'en' ? 'en' : 'pt-BR'; } catch (e) {}
+    this.measure();
+    setTimeout(function () { self.measure(); }, 350);
+    setTimeout(function () { self.measure(); }, 1200);
+    try { document.fonts.ready.then(function () { self.measure(); }); } catch (e) {}
+    try { this.ro = new ResizeObserver(function () { self.measure(); }); if (this.stage) this.ro.observe(this.stage); } catch (e) {}
+    window.addEventListener('scroll', this.onScroll, true);
+  }
+  componentDidUpdate(prevProps, prevState) {
+    var self = this;
+    var pl = this.props.lang;
+    if (prevProps && pl !== prevProps.lang && (pl === 'pt' || pl === 'en') && pl !== this.state.lang) { this.setLang(pl); return; }
+    if (prevState && prevState.lang !== this.state.lang) {
+      try { document.documentElement.lang = this.state.lang === 'en' ? 'en' : 'pt-BR'; } catch (e) {}
+      requestAnimationFrame(function () {
+        self.measure();
+        if (self.keepLevel != null && self.m && self.root) {
+          var top = self.root.getBoundingClientRect().top + window.scrollY;
+          window.scrollTo(0, top + self.starts()[self.keepLevel]);
+          self.keepLevel = null;
+          self.update();
+        }
+      });
+    }
+  }
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.onScroll, true);
+    if (this.ro) this.ro.disconnect();
+  }
+  measure() {
+    var st = this.stage; if (!st) return;
+    var W = st.clientWidth, H = st.clientHeight; if (!W || !H) return;
+    var diag = Math.sqrt(W * W + H * H), N = this.N;
+    var R = [], P = [], K = [], clip = [], Dd = Math.round(H * 1.4);
+    for (var i = 0; i < N; i++) {
+      var c = this.C[i]; if (!c) return;
+      R.push(Math.max(0, c.offsetHeight - H));
+      if (i < N - 1) {
+        var p = this.P[i]; if (!p) return;
+        var d = p.offsetWidth;
+        P.push({ x: p.offsetLeft + d / 2, y: p.offsetTop + p.offsetHeight / 2 });
+        var k = Math.max(8, 1.08 * diag / d);
+        K.push(k); clip.push((d / 2) * k);
+      }
+    }
+    var total = H;
+    for (var j = 0; j < N; j++) total += R[j] + (j < N - 1 ? Dd : 0);
+    this.m = { W: W, H: H, R: R, P: P, K: K, Dd: Dd, total: total };
+    if (this.root) this.root.style.height = total + 'px';
+    for (var w = 1; w < N; w++) {
+      if (this.W[w]) this.W[w].style.clipPath = this.reduce ? 'none' : 'circle(' + clip[w - 1].toFixed(1) + 'px at 50% 50%)';
+    }
+    this.update();
+  }
+  starts() {
+    var m = this.m, out = [], y = 0;
+    for (var i = 0; i < this.N; i++) { out.push(y); y += m.R[i] + m.Dd; }
+    return out;
+  }
+  jump(i) {
+    if (!this.m || !this.root) return;
+    var top = this.root.getBoundingClientRect().top + window.scrollY;
+    var y = this.starts()[i];
+    try { window.scrollTo({ top: top + y, behavior: this.reduce ? 'auto' : 'smooth' }); } catch (e) { window.scrollTo(0, top + y); }
+  }
+  update() {
+    var m = this.m; if (!m || !this.root) return;
+    var N = this.N, y = -this.root.getBoundingClientRect().top;
+    y = Math.max(0, Math.min(m.total - m.H, y));
+    var n = 0, s = 0, t = 0, rem = y;
+    for (var i = 0; i < N; i++) {
+      n = i;
+      if (rem <= m.R[i] || i === N - 1) { s = Math.min(rem, m.R[i]); t = 0; break; }
+      rem -= m.R[i];
+      if (rem < m.Dd) { s = m.R[i]; t = rem / m.Dd; break; }
+      rem -= m.Dd;
+    }
+    var e = t * t * (3 - 2 * t);
+    var C = { x: m.W / 2, y: m.H / 2 };
+    var sc = [];
+    for (var a = 0; a < N; a++) sc.push(a < n ? m.R[a] : (a === n ? s : 0));
+    var Pof = function (k) { return { x: m.P[k].x, y: m.P[k].y - sc[k] }; };
+    var tr = [];
+    if (this.reduce) {
+      for (var q = 0; q < N; q++) tr[q] = { s: 1, ax: 0, ay: 0, op: q === n ? 1 : (q === n + 1 ? e : 0) };
+    } else {
+      if (n < N - 1) {
+        var Pn = Pof(n), Kn = m.K[n], sn = Math.pow(Kn, e);
+        var sx = Pn.x + (C.x - Pn.x) * e, sy = Pn.y + (C.y - Pn.y) * e;
+        tr[n] = { s: sn, ax: sx - sn * Pn.x, ay: sy - sn * Pn.y };
+      } else tr[n] = { s: 1, ax: 0, ay: 0 };
+      for (var f = n; f < N - 1; f++) {
+        var A = tr[f], Pf = Pof(f), Kf = m.K[f];
+        tr[f + 1] = { s: A.s / Kf, ax: A.ax + A.s * (Pf.x - C.x / Kf), ay: A.ay + A.s * (Pf.y - C.y / Kf) };
+      }
+      for (var b = n - 1; b >= 0; b--) {
+        var B = tr[b + 1], Pb = Pof(b), Kb = m.K[b], sb = B.s * Kb;
+        tr[b] = { s: sb, ax: B.ax - sb * (Pb.x - C.x / Kb), ay: B.ay - sb * (Pb.y - C.y / Kb) };
+      }
+    }
+    var cur = t > 0.5 ? n + 1 : n;
+    for (var w = 0; w < N; w++) {
+      var el = this.W[w], ce = this.C[w]; if (!el || !ce) continue;
+      var T = tr[w];
+      var vis = this.reduce ? (w === n || (w === n + 1 && t > 0)) : (w >= n - 1 && w <= n + 1);
+      el.style.visibility = vis ? 'visible' : 'hidden';
+      el.style.transform = 'translate(' + T.ax.toFixed(2) + 'px, ' + T.ay.toFixed(2) + 'px) scale(' + T.s.toPrecision(7) + ')';
+      if (this.reduce) el.style.opacity = String(T.op);
+      el.style.pointerEvents = w === cur ? 'auto' : 'none';
+      ce.style.transform = 'translate(0px, ' + (-sc[w]).toFixed(1) + 'px)';
+    }
+    if (this.depthEl) this.depthEl.textContent = String(Math.round((n + e) * 250)).padStart(4, '0');
+    if (cur !== this.state.cur) this.setState({ cur: cur });
+  }
+  renderVals() {
+    var self = this, cur = this.state.cur, lang = this.state.lang;
+    if (!this._i18n) this._i18n = Component.i18n();
+    var t = this._i18n[lang] || this._i18n.pt;
+    var vals = {
+      t: t,
+      accent: this.props.accent ?? '#FF4F1A',
+      setRoot: this.setRoot, setStage: this.setStage, setDepth: this.setDepth,
+      setPT: this.setPT, setEN: this.setEN,
+      ptOn: lang === 'pt' ? 'true' : 'false', enOn: lang === 'en' ? 'true' : 'false',
+      ptOp: lang === 'pt' ? '1' : '.45', enOp: lang === 'en' ? '1' : '.45',
+      stops: t.stops.map(function (l, i) {
+        return { num: '0' + i, label: l, aria: t.goTo + ' ' + l, go: self['go' + i], op: i === cur ? '1' : '.55', fill: i === cur ? '#EDE8DD' : 'transparent' };
+      })
+    };
+    for (var i = 0; i < this.N; i++) {
+      vals['setW' + i] = this['setW' + i];
+      vals['setC' + i] = this['setC' + i];
+      vals['go' + i] = this['go' + i];
+      if (i < this.N - 1) vals['setP' + i] = this['setP' + i];
+    }
+    return vals;
+  }
+}
+</script>
+</body>
+</html>
