@@ -2,7 +2,12 @@ import "./styles/tokens.css";
 import "./styles/site.css";
 import { strings, type Lang, type Strings } from "./i18n";
 
-// The dive, implemented as written in design/mergulho/dive.md.
+// The dive, implemented as written in design/mergulho/dive.md, with one change made after the
+// handoff: the dive is not part of the page scroll. "Dive space" is the scroll space of dive.md
+// (every world's reading plus a dive between each pair), and the update() math runs on it as is.
+// But the page itself is only as tall as the current world's reading: the page scroll moves through
+// that reading, and a dive is an animation in time that ends by swapping in the next world's height.
+// Touch momentum and the mobile browser bars can then never move the page through a dive.
 
 const N = 5;
 const DIVE = 1.4; // dive-distance, in viewport heights
@@ -12,7 +17,7 @@ const DEPTH_STEP = 250;
 
 interface Point { x: number; y: number }
 interface Transform { s: number; ax: number; ay: number }
-interface Measure { W: number; H: number; R: number[]; P: Point[]; K: number[]; D: number; total: number }
+interface Measure { W: number; H: number; R: number[]; P: Point[]; K: number[]; D: number }
 
 const root = document.querySelector<HTMLElement>(".root")!;
 const stage = document.querySelector<HTMLElement>(".stage")!;
@@ -27,6 +32,8 @@ const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
 let reduced = motion.matches;
 let m: Measure | null = null;
 let cur = 0;
+let world = 0; // the world whose reading the page scroll holds right now
+let animY: number | null = null; // dive-space position while a dive animates, null at rest
 const scales: number[] = new Array(N).fill(1); // last written scale of each world, to map focus positions
 
 const scrollY0 = () => root.getBoundingClientRect().top + window.scrollY;
@@ -52,8 +59,25 @@ function locate(y: number) {
   return { n, s, t };
 }
 
+/** How far the page has scrolled into the current world's reading. */
+function readOffset(): number {
+  return Math.min(Math.max(-root.getBoundingClientRect().top, 0), m!.R[world]);
+}
+
+/** The position in dive space: the animation while diving, else the current world's reading. */
 function currentY(): number {
-  return Math.min(Math.max(-root.getBoundingClientRect().top, 0), m!.total - m!.H);
+  return animY ?? starts()[world] + readOffset();
+}
+
+/** Rest at dive-space position `y`: make the page as tall as that world's reading and scroll to it. */
+function place(y: number) {
+  let { n, s, t } = locate(y);
+  if (t >= 0.5) { n += 1; s = 0; } // a resting position inside a dive goes to its nearer edge
+  world = n;
+  root.dataset.world = String(n);
+  root.style.height = m!.H + m!.R[n] + "px";
+  window.scrollTo(0, scrollY0() + s);
+  update();
 }
 
 function measure(keep: "progress" | "level" = "progress") {
@@ -61,11 +85,11 @@ function measure(keep: "progress" | "level" = "progress") {
   if (!W || !H) return;
 
   // Remember where the reader is, so a re-measure doesn't move them.
-  let prev: { n: number; f: number; t: number } | null = null;
+  let prev = { n: 0, f: 0 };
   if (m) {
-    const y = currentY();
-    const p = locate(y);
-    prev = keep === "level" ? { n: cur, f: 0, t: 0 } : { n: p.n, f: m.R[p.n] ? p.s / m.R[p.n] : 0, t: p.t };
+    stopDive();
+    const p = locate(currentY());
+    prev = keep === "level" ? { n: cur, f: 0 } : { n: p.n, f: m.R[p.n] ? p.s / m.R[p.n] : 0 };
   }
 
   const diag = Math.hypot(W, H);
@@ -80,15 +104,8 @@ function measure(keep: "progress" | "level" = "progress") {
       worlds[i + 1].style.clipPath = reduced ? "none" : `circle(${((d / 2) * K[i]).toFixed(1)}px at 50% 50%)`;
     }
   }
-  const total = H + R.reduce((a, b) => a + b, 0) + (N - 1) * D;
-  m = { W, H, R, P, K, D, total };
-  root.style.height = total + "px";
-
-  if (prev) {
-    const y = starts()[prev.n] + prev.f * R[prev.n] + prev.t * D;
-    if (Math.abs(y - currentY()) > 1) window.scrollTo(0, scrollY0() + y);
-  }
-  update();
+  m = { W, H, R, P, K, D };
+  place(starts()[prev.n] + prev.f * R[prev.n]);
 }
 
 function update() {
@@ -165,88 +182,63 @@ const DIVE_MS_REDUCED = 450; // the crossfade under reduced motion
 const GESTURE_GAP = 200; // ms without wheel events that separates two gestures
 const INERTIA_MAX = 600; // ms after landing during which a still-decaying gesture is swallowed
 const SWIPE_MIN = 12; // px a finger travels before a swipe counts
-const SETTLE_IDLE = 150; // ms without scroll events before a scroll that stopped mid-dive is finished
-const EDGE = 2; // px: with display scaling the scroll lands on device pixels, a fraction off a world's edge
+const EDGE = 2; // px: with display scaling the scroll lands on device pixels, a fraction off an edge
 
 let diving = 0; // rAF id of the running dive, 0 when idle
 let wheelLocked = false, lastWheel = 0, lastDelta = 0, landed = 0;
-let held = false, lastY = window.scrollY, dir = 1;
-let touchY0 = 0, touchMode: "?" | "dive" | "native" = "?", touchFired = false, settleTimer = 0;
+let touchY0 = 0, touchMode: "?" | "dive" | "native" = "?", touchFired = false;
 
-const ends = () => starts().map((s, i) => s + m!.R[i]);
 const easeInOut = (p: number) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
 
-/** Where a scroll of `delta` px from here should dive to, or null when it is plain reading. */
+/** Where a scroll of `delta` px from here should dive to, or null when it stays inside the reading. */
 function diveTarget(delta: number): number | null {
-  if (!m || !delta) return null;
-  const S = starts(), E = ends();
-  let y = currentY(), { n, t } = locate(y);
-  if (t > 0) {
-    // A position a hair inside a dive is really the world's edge: treat it as such, or a no-op
-    // "dive" of a fraction of a pixel would swallow every wheel event.
-    const into = t * m.D;
-    if (into < EDGE) y = E[n];
-    else if (m.D - into < EDGE) y = S[++n];
-    else return delta > 0 ? S[n + 1] : E[n];
-  }
-  let target: number | null = null;
-  if (delta > 0 && n < N - 1 && y + delta > E[n] - 1) target = S[n + 1];
-  else if (delta < 0 && n > 0 && y + delta < S[n] + 1) target = E[n - 1];
-  return target !== null && Math.abs(target - currentY()) >= 1 ? target : null;
+  if (!m || !delta || diving) return null;
+  const off = readOffset(), S = starts();
+  if (delta > 0 && world < N - 1 && off + delta > m.R[world] - EDGE) return S[world + 1];
+  if (delta < 0 && world > 0 && off + delta < EDGE) return S[world - 1] + m.R[world - 1];
+  return null;
 }
 
-/** Animate the scroll to `target`. */
+/** Animate dive space to `target`, then rest there. */
 function dive(target: number) {
   if (!m) return;
   stopDive();
-  const base = scrollY0(), from = currentY(), dist = target - from;
+  const from = currentY(), dist = target - from;
   if (Math.abs(dist) < 1) return;
   const per = reduced ? DIVE_MS_REDUCED : DIVE_MS;
   const dur = Math.min(Math.max((per * Math.abs(dist)) / m.D, per * 0.5), per * 2.2);
-  // One dive scrolls linearly (the zoom adds its own easing); longer jumps ease in and out.
+  // One dive runs linearly (the zoom adds its own easing); longer jumps ease in and out.
   const ease = Math.abs(dist) > m.D * 1.05 ? easeInOut : (p: number) => p;
   wheelLocked = true;
   const t0 = performance.now();
   const step = (now: number) => {
     const p = Math.min(1, (now - t0) / dur);
-    window.scrollTo(0, base + from + dist * ease(p));
-    update();
-    if (p < 1) diving = requestAnimationFrame(step);
-    else { diving = 0; landed = performance.now(); lastY = window.scrollY; }
+    animY = from + dist * ease(p);
+    if (p < 1) { update(); diving = requestAnimationFrame(step); return; }
+    diving = 0;
+    animY = null;
+    landed = performance.now();
+    place(target);
   };
+  animY = from;
   diving = requestAnimationFrame(step);
 }
 
+/** Stop a running dive where it is and rest at the nearer edge. */
 function stopDive() {
-  if (diving) { cancelAnimationFrame(diving); diving = 0; landed = performance.now(); }
+  if (!diving) return;
+  cancelAnimationFrame(diving);
+  diving = 0;
+  landed = performance.now();
+  const y = animY!;
+  animY = null;
+  place(y);
 }
-
-/**
- * A scroll that came to rest inside a dive (touch momentum, scrollbar drag) finishes it in the
- * direction it was going. Only once the scroll has stopped: starting a dive while momentum is still
- * moving the page makes the two fight, and the page bounces back and forth.
- */
-function settle() {
-  clearTimeout(settleTimer);
-  if (!m || diving || held) return;
-  const { n, t } = locate(currentY());
-  const into = t * m.D;
-  if (into > EDGE && m.D - into > EDGE && n < N - 1) dive(dir > 0 ? starts()[n + 1] : ends()[n]);
-}
-const settleSoon = () => { clearTimeout(settleTimer); settleTimer = window.setTimeout(settle, SETTLE_IDLE); };
-
-window.addEventListener("scroll", () => {
-  const y = window.scrollY;
-  if (y !== lastY) { dir = y > lastY ? 1 : -1; lastY = y; }
-  if (!diving) settleSoon();
-}, { passive: true });
-window.addEventListener("scrollend", () => settle());
 
 window.addEventListener("wheel", (e) => {
   if (!m || e.ctrlKey) return; // ctrl + wheel is page zoom
   const now = performance.now(), gap = now - lastWheel;
   lastWheel = now;
-  held = false;
   const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? m.H : 1;
   const dy = e.deltaY * unit, size = Math.abs(dy), prev = lastDelta;
   lastDelta = size;
@@ -264,11 +256,10 @@ window.addEventListener("wheel", (e) => {
   if (target !== null) { e.preventDefault(); dive(target); }
 }, { passive: false });
 
-// A swipe is decided on its first move. Only a swipe that starts at a world's edge, heading out of
-// it, becomes a dive: its first move is cancelled before the page scrolls, so there is no momentum
-// to fight. Any other swipe is left alone for its whole length, momentum included.
+// A swipe is decided on its first move: one that starts at the edge of the reading, heading out of
+// it, becomes a dive and never scrolls the page. Any other swipe is plain scroll, and its momentum
+// stops at the end of the reading, because that is where the page ends.
 window.addEventListener("touchstart", (e) => {
-  held = true;
   touchMode = "?";
   touchFired = false;
   touchY0 = e.touches[0].clientY;
@@ -289,13 +280,6 @@ window.addEventListener("touchmove", (e) => {
   const target = diveTarget(d);
   if (target !== null) { touchFired = true; dive(target); }
 }, { passive: false });
-
-const release = () => { held = false; touchMode = "?"; settleSoon(); };
-window.addEventListener("touchend", release, { passive: true });
-window.addEventListener("touchcancel", release, { passive: true });
-// Mouse only: a pressed button may be dragging the scrollbar.
-window.addEventListener("pointerdown", (e) => { if (e.pointerType === "mouse") held = true; });
-window.addEventListener("pointerup", (e) => { if (e.pointerType === "mouse") release(); });
 
 const KEY_STEP: Record<string, number> = { ArrowDown: 40, ArrowUp: -40, PageDown: 0.875, PageUp: -0.875, " ": 0.875 };
 window.addEventListener("keydown", (e) => {
@@ -395,9 +379,8 @@ root.addEventListener("focusin", (ev) => {
   const inView = local >= 0 && local <= m.R[w] && top - local >= 0 && top + h - local <= m.H;
   if (inView) return;
   const target = start + Math.min(Math.max(top + h / 2 - m.H / 2, 0), m.R[w]);
-  stopDive();
-  window.scrollTo(0, scrollY0() + target);
-  update(); // place the worlds now, so the browser sees the element in view and doesn't scroll on its own
+  if (diving) { cancelAnimationFrame(diving); diving = 0; animY = null; }
+  place(target); // synchronously, so the browser sees the element in view and doesn't scroll on its own
 });
 
 if ("scrollRestoration" in history) history.scrollRestoration = "manual";
