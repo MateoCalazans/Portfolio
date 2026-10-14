@@ -122,6 +122,10 @@ window.scrollTo({ top: top + start(i), behavior: reduced ? 'auto' : 'smooth' });
 
 A smooth scroll passes through every dive on the way, which is intended.
 
+## Scrolljacking (changed after the handoff, at Mateo's request)
+
+This replaces "no scroll hijacking" above, at world edges only. Reading inside a world stays plain scroll. At the end of a world's reading, one gesture down (wheel, trackpad, swipe of 12px or more, ArrowDown, PageDown, Space) plays the whole dive to the start of the next world in 1.2 s; at the start of a world, one gesture up plays it back to the end of the previous one. The scroll is animated with `window.scrollTo`, linear for one dive (the zoom's smoothstep eases it) and ease-in-out for longer HUD jumps. While a dive runs, wheel, touchmove and scroll keys are prevented; wheel events less than 200 ms apart count as the same gesture, so trackpad inertia never triggers a second dive. A touch-started dive also sets `overflow: hidden` on `<html>` to stop momentum. A scroll that comes to rest inside a dive by other means (momentum, scrollbar drag) finishes it in the last direction. Under reduced motion the same gesture plays a 450 ms crossfade.
+
 ## Reduced motion
 
 With `prefers-reduced-motion: reduce`: no clip-path, every world at identity transform, world n at opacity 1 and world n+1 at opacity `e`. The scroll mapping and navigation do not change.

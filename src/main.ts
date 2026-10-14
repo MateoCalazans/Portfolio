@@ -152,9 +152,150 @@ function onScroll() {
 }
 
 function jump(i: number) {
-  if (!m) return;
-  window.scrollTo({ top: scrollY0() + starts()[i], behavior: reduced ? "auto" : "smooth" });
+  if (m) dive(starts()[i]);
 }
+
+// ---------- Scrolljacking (changed after the handoff, at Mateo's request) ----------
+// Reading inside a world is plain scroll. At a world's edge, one gesture (wheel, trackpad, swipe
+// or key) plays the whole dive to the next world, and input is held until it lands. The inertia
+// of that gesture is swallowed, so one trackpad flick never skips two worlds.
+
+const DIVE_MS = 1200; // one whole dive; the dive's own smoothstep gives it its ease-in-out
+const DIVE_MS_REDUCED = 450; // the crossfade under reduced motion
+const GESTURE_GAP = 200; // ms without wheel events that separates two gestures
+const INERTIA_MAX = 600; // ms after landing during which a still-decaying gesture is swallowed
+const SWIPE_MIN = 12; // px a finger travels before a swipe counts
+const EDGE = 2; // px: with display scaling the scroll lands on device pixels, a fraction off a world's edge
+
+let diving = 0; // rAF id of the running dive, 0 when idle
+let wheelLocked = false, lastWheel = 0, lastDelta = 0, landed = 0;
+let held = false, lastY = window.scrollY, dir = 1;
+let touchY0 = 0, touchY = 0, touchFired = false;
+
+const ends = () => starts().map((s, i) => s + m!.R[i]);
+const easeInOut = (p: number) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+
+/** Where a scroll of `delta` px from here should dive to, or null when it is plain reading. */
+function diveTarget(delta: number): number | null {
+  if (!m || !delta) return null;
+  const S = starts(), E = ends();
+  let y = currentY(), { n, t } = locate(y);
+  if (t > 0) {
+    // A position a hair inside a dive is really the world's edge: treat it as such, or a no-op
+    // "dive" of a fraction of a pixel would swallow every wheel event.
+    const into = t * m.D;
+    if (into < EDGE) y = E[n];
+    else if (m.D - into < EDGE) y = S[++n];
+    else return delta > 0 ? S[n + 1] : E[n];
+  }
+  let target: number | null = null;
+  if (delta > 0 && n < N - 1 && y + delta > E[n] - 1) target = S[n + 1];
+  else if (delta < 0 && n > 0 && y + delta < S[n] + 1) target = E[n - 1];
+  return target !== null && Math.abs(target - currentY()) >= 1 ? target : null;
+}
+
+/** Animate the scroll to `target`. `lock` also freezes the page scroll, which stops touch momentum. */
+function dive(target: number, lock = false) {
+  if (!m) return;
+  stopDive();
+  const base = scrollY0(), from = currentY(), dist = target - from;
+  if (Math.abs(dist) < 1) return;
+  const per = reduced ? DIVE_MS_REDUCED : DIVE_MS;
+  const dur = Math.min(Math.max((per * Math.abs(dist)) / m.D, per * 0.5), per * 2.2);
+  // One dive scrolls linearly (the zoom adds its own easing); longer jumps ease in and out.
+  const ease = Math.abs(dist) > m.D * 1.05 ? easeInOut : (p: number) => p;
+  if (lock) document.documentElement.classList.add("is-diving");
+  wheelLocked = true;
+  const t0 = performance.now();
+  const step = (now: number) => {
+    const p = Math.min(1, (now - t0) / dur);
+    window.scrollTo(0, base + from + dist * ease(p));
+    update();
+    if (p < 1) diving = requestAnimationFrame(step);
+    else { diving = 0; landed = performance.now(); lastY = window.scrollY; document.documentElement.classList.remove("is-diving"); }
+  };
+  diving = requestAnimationFrame(step);
+}
+
+function stopDive() {
+  if (diving) { cancelAnimationFrame(diving); diving = 0; landed = performance.now(); }
+  document.documentElement.classList.remove("is-diving");
+}
+
+/** A scroll that came to rest inside a dive (touch momentum, scrollbar drag) finishes it. */
+function settle() {
+  if (!m || diving || held) return;
+  const { n, t } = locate(currentY());
+  const into = t * m.D;
+  if (into > EDGE && m.D - into > EDGE && n < N - 1) dive(dir > 0 ? starts()[n + 1] : ends()[n], true);
+}
+
+window.addEventListener("scroll", () => {
+  const y = window.scrollY;
+  if (y !== lastY) { dir = y > lastY ? 1 : -1; lastY = y; }
+  settle();
+}, { passive: true });
+
+window.addEventListener("wheel", (e) => {
+  if (!m || e.ctrlKey) return; // ctrl + wheel is page zoom
+  const now = performance.now(), gap = now - lastWheel;
+  lastWheel = now;
+  held = false;
+  const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? m.H : 1;
+  const dy = e.deltaY * unit, size = Math.abs(dy), prev = lastDelta;
+  lastDelta = size;
+  if (diving) { e.preventDefault(); return; }
+  if (wheelLocked) {
+    // After a dive, swallow the rest of the gesture that started it: events still close together and
+    // not speeding up. Trackpad inertia keeps shrinking, so it is swallowed until it dies out; a mouse
+    // wheel sends equal steps, which only count for INERTIA_MAX, so continuous scrolling never sticks.
+    const decaying = size < prev || now - landed < INERTIA_MAX;
+    if (gap < GESTURE_GAP && size <= prev && decaying) { e.preventDefault(); return; }
+    wheelLocked = false;
+  }
+  if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+  const target = diveTarget(dy);
+  if (target !== null) { e.preventDefault(); dive(target); }
+}, { passive: false });
+
+window.addEventListener("touchstart", (e) => {
+  held = true;
+  touchFired = false;
+  touchY0 = touchY = e.touches[0].clientY;
+}, { passive: true });
+
+window.addEventListener("touchmove", (e) => {
+  if (e.touches.length > 1) return; // pinch zoom
+  if (diving || touchFired) { if (e.cancelable) e.preventDefault(); return; }
+  const y = e.touches[0].clientY, step = touchY - y;
+  touchY = y;
+  const target = diveTarget(step || touchY0 - y);
+  if (target === null) return;
+  if (e.cancelable) e.preventDefault();
+  if (Math.abs(touchY0 - y) >= SWIPE_MIN) { touchFired = true; dive(target, true); }
+}, { passive: false });
+
+const release = () => { held = false; touchFired = false; settle(); };
+window.addEventListener("touchend", release, { passive: true });
+window.addEventListener("touchcancel", release, { passive: true });
+// Mouse only: a pressed button may be dragging the scrollbar.
+window.addEventListener("pointerdown", (e) => { if (e.pointerType === "mouse") held = true; });
+window.addEventListener("pointerup", (e) => { if (e.pointerType === "mouse") release(); });
+
+const KEY_STEP: Record<string, number> = { ArrowDown: 40, ArrowUp: -40, PageDown: 0.875, PageUp: -0.875, " ": 0.875 };
+window.addEventListener("keydown", (e) => {
+  if (!m || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+  const el = e.target as Element;
+  if (el.closest("input, textarea, select, [contenteditable]")) return;
+  if (e.key === " " && el.closest("button, a")) return; // space presses the control
+  let delta = KEY_STEP[e.key];
+  if (delta === undefined) return;
+  if (Math.abs(delta) < 1) delta *= m.H; // page keys move by most of a screen
+  if (e.key === " " && e.shiftKey) delta = -delta;
+  if (diving) { e.preventDefault(); return; }
+  const target = diveTarget(delta);
+  if (target !== null) { e.preventDefault(); dive(target); }
+});
 
 // ---------- Language ----------
 
@@ -239,6 +380,7 @@ root.addEventListener("focusin", (ev) => {
   const inView = local >= 0 && local <= m.R[w] && top - local >= 0 && top + h - local <= m.H;
   if (inView) return;
   const target = start + Math.min(Math.max(top + h / 2 - m.H / 2, 0), m.R[w]);
+  stopDive();
   window.scrollTo(0, scrollY0() + target);
   update(); // place the worlds now, so the browser sees the element in view and doesn't scroll on its own
 });
