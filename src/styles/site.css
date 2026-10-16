@@ -146,6 +146,7 @@ button { color: inherit; }
 .vis--casemate { background: var(--ember-500); color: var(--ink-900); }
 .vis--organifi { background: var(--moss-700); color: var(--moss-100); }
 .vis--factor { background: var(--bone-100); color: var(--ink-900); }
+.vis--dutcher { background: var(--crimson-800); color: var(--crimson-100); }
 .vis--mio { background: var(--cream-50); display: grid; place-items: center; }
 .vis--mio img { width: 58%; height: auto; mix-blend-mode: multiply; }
 .ptxt { display: flex; flex-direction: column; gap: 16px; align-items: flex-start; }
