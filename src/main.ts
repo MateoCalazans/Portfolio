@@ -298,11 +298,15 @@ window.addEventListener("keydown", (e) => {
 
 // ---------- Language ----------
 
+// ?lang= wins so each language has its own indexable URL; crawlers without one get PT, the canonical page.
 function readLang(): Lang {
+  const param = new URLSearchParams(location.search).get("lang");
+  if (param === "pt" || param === "en") return param;
   try {
     const saved = localStorage.getItem("mc-lang");
     if (saved === "pt" || saved === "en") return saved;
   } catch { /* storage blocked */ }
+  if (/bot|crawl|spider|slurp|lighthouse/i.test(navigator.userAgent)) return "pt";
   return /^pt/i.test(navigator.language || "") ? "pt" : "en";
 }
 
@@ -315,6 +319,9 @@ let lang: Lang = readLang();
 function applyLang(l: Lang) {
   const t = strings[l];
   document.documentElement.lang = l === "en" ? "en" : "pt-BR";
+  document.title = t.metaTitle;
+  document.querySelector('meta[name="description"]')?.setAttribute("content", t.metaDesc);
+  document.querySelector('link[rel="canonical"]')?.setAttribute("href", `https://mateocalazans.com/${l === "en" ? "?lang=en" : ""}`);
   document.querySelectorAll<HTMLElement>("[data-t]").forEach((el) => {
     el.textContent = String(lookup(t, el.dataset.t!));
   });
@@ -347,15 +354,39 @@ document.addEventListener("click", (ev) => {
   if (lg) setLang(lg.dataset.lang as Lang);
 });
 
-// No contact endpoint yet: the form opens the visitor's mail app with the message filled in.
+// The form posts to /api/contact (Resend). If that fails, it falls back to the visitor's mail app.
 const form = document.querySelector<HTMLFormElement>("form[data-mailto]")!;
-form.addEventListener("submit", (ev) => {
-  ev.preventDefault();
-  const data = new FormData(form);
+const formStatus = form.querySelector<HTMLElement>(".form-status")!;
+const sendButton = form.querySelector<HTMLButtonElement>("button[type=submit]")!;
+
+function openMailto(data: FormData) {
   const name = String(data.get("name") || "");
   const subject = `Portfolio — ${name}`;
   const body = `${data.get("message") || ""}\n\n${name}\n${data.get("email") || ""}`;
   window.location.href = `mailto:${form.dataset.mailto}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+form.addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const data = new FormData(form);
+  const t = strings[lang];
+  sendButton.disabled = true;
+  formStatus.textContent = t.sending;
+  try {
+    const res = await fetch(form.action, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(Object.fromEntries(data)),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    form.reset();
+    formStatus.textContent = t.sent;
+  } catch {
+    formStatus.textContent = t.sendFail;
+    openMailto(data);
+  } finally {
+    sendButton.disabled = false;
+  }
 });
 
 // Worlds clip with overflow: hidden, but the browser can still scroll them to reveal a focused

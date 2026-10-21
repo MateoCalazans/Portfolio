@@ -7,7 +7,72 @@
     <meta name="description" content="Mateo Calazans — desenvolvedor Shopify e Theme Architect em Natal, Brasil. Storefronts Shopify de alta performance que convertem." />
     <meta name="theme-color" content="#0e0e0c" />
     <meta name="google" content="notranslate" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="author" content="Mateo Calazans" />
+    <link rel="canonical" href="https://mateocalazans.com/" />
+    <link rel="alternate" hreflang="pt-BR" href="https://mateocalazans.com/" />
+    <link rel="alternate" hreflang="en" href="https://mateocalazans.com/?lang=en" />
+    <link rel="alternate" hreflang="x-default" href="https://mateocalazans.com/" />
+    <meta property="og:type" content="profile" />
+    <meta property="og:site_name" content="Mateo Calazans" />
+    <meta property="og:url" content="https://mateocalazans.com/" />
+    <meta property="og:title" content="Mateo Calazans — Shopify Developer" />
+    <meta property="og:description" content="Desenvolvedor Shopify e Theme Architect em Natal, Brasil. Storefronts Shopify de alta performance que convertem." />
+    <meta property="og:image" content="https://mateocalazans.com/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Mateo Calazans — Shopify Developer" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta property="profile:first_name" content="Mateo" />
+    <meta property="profile:last_name" content="Calazans" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Mateo Calazans — Shopify Developer" />
+    <meta name="twitter:description" content="Desenvolvedor Shopify e Theme Architect em Natal, Brasil. Storefronts Shopify de alta performance que convertem." />
+    <meta name="twitter:image" content="https://mateocalazans.com/og.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://mateocalazans.com/#website",
+            "url": "https://mateocalazans.com/",
+            "name": "Mateo Calazans",
+            "inLanguage": ["pt-BR", "en"],
+            "publisher": { "@id": "https://mateocalazans.com/#person" }
+          },
+          {
+            "@type": "ProfilePage",
+            "@id": "https://mateocalazans.com/#profile",
+            "url": "https://mateocalazans.com/",
+            "name": "Mateo Calazans — Shopify Developer",
+            "isPartOf": { "@id": "https://mateocalazans.com/#website" },
+            "mainEntity": { "@id": "https://mateocalazans.com/#person" }
+          },
+          {
+            "@type": "Person",
+            "@id": "https://mateocalazans.com/#person",
+            "name": "Mateo Calazans",
+            "url": "https://mateocalazans.com/",
+            "image": "https://mateocalazans.com/og.png",
+            "jobTitle": "Shopify Developer",
+            "description": "Shopify developer and Theme Architect building high-performance Shopify storefronts that convert.",
+            "email": "mailto:maateodtc@gmail.com",
+            "address": { "@type": "PostalAddress", "addressLocality": "Natal", "addressRegion": "RN", "addressCountry": "BR" },
+            "alumniOf": { "@type": "CollegeOrUniversity", "name": "Universidade Federal do Rio Grande do Norte (UFRN)" },
+            "knowsAbout": ["Shopify", "Liquid", "Shopify Functions", "Shopify Extensions", "Metaobjects", "Storefront API", "JavaScript", "TypeScript", "React", "Core Web Vitals", "SEO", "CRO", "Accessibility"],
+            "sameAs": [
+              "https://www.linkedin.com/in/mateocalazans/",
+              "https://github.com/MateoCalazans",
+              "https://www.instagram.com/mateocalazans/"
+            ]
+          }
+        ]
+      }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- Fonts load without blocking the first paint; text shows in the fallback face until they arrive. -->
@@ -17,8 +82,10 @@
     <script>
       // Language before first paint: stored choice, else the browser language (pt → PT, anything else → EN).
       try {
-        var l = localStorage.getItem("mc-lang");
-        if (l !== "pt" && l !== "en") l = /^pt/i.test(navigator.language || "") ? "pt" : "en";
+        // Same order as readLang() in main.ts: ?lang=, stored choice, crawlers → PT, browser language.
+        var l = new URLSearchParams(location.search).get("lang");
+        if (l !== "pt" && l !== "en") l = localStorage.getItem("mc-lang");
+        if (l !== "pt" && l !== "en") l = /bot|crawl|spider|slurp|lighthouse/i.test(navigator.userAgent) || /^pt/i.test(navigator.language || "") ? "pt" : "en";
         document.documentElement.lang = l === "en" ? "en" : "pt-BR";
       } catch (e) {}
     </script>
@@ -232,11 +299,14 @@
                   </ul>
                   <a class="btn btn--solid btn--start" href="/resume.pdf" download="Mateo_Calazans_CV.pdf" data-t="cv">Baixar CV ↓</a>
                 </div>
-                <form class="form" data-mailto="maateodtc@gmail.com">
+                <form class="form" action="/api/contact" method="post" data-mailto="maateodtc@gmail.com">
+                  <!-- Honeypot: hidden from people, bots that fill every field get dropped by /api/contact. -->
+                  <label class="hp" aria-hidden="true">Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
                   <label class="flabel"><span class="lbl" data-t="fName">Nome</span><input class="field" type="text" name="name" autocomplete="name" required /></label>
                   <label class="flabel"><span class="lbl" data-t="fEmail">E-mail</span><input class="field" type="email" name="email" autocomplete="email" required /></label>
                   <label class="flabel"><span class="lbl" data-t="fMsg">Mensagem</span><textarea class="field" name="message" rows="5" required></textarea></label>
                   <button class="btn btn--solid btn--start" type="submit" data-t="send">Enviar mensagem</button>
+                  <p class="lbl form-status" role="status" aria-live="polite"></p>
                 </form>
               </div>
               <footer class="footer">

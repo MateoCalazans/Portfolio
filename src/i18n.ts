@@ -6,6 +6,8 @@ export type Lang = "pt" | "en";
 interface Word { a: string; b: string; len: number }
 
 const pt = {
+  metaTitle: "Mateo Calazans — Shopify Developer",
+  metaDesc: "Mateo Calazans — desenvolvedor Shopify e Theme Architect em Natal, Brasil. Storefronts Shopify de alta performance que convertem.",
   navAria: "Seções", n1: "Sobre", n2: "Código", n3: "Trajetória", n4: "Contato",
   cv: "Baixar CV ↓", status: "Disponível para trabalho",
   tagline: "Criando storefronts Shopify de alta performance que convertem.",
@@ -45,6 +47,8 @@ const pt = {
   h4: "Nível 04 — Contato", w4: { a: "C", b: "NTATO", len: 7 } as Word, bottom: "−1000 m · o fundo",
   together: "Vamos trabalhar juntos.", together2: "Tem um projeto em mente? Adoraria saber mais.",
   fName: "Nome", fEmail: "E-mail", fMsg: "Mensagem", send: "Enviar mensagem",
+  sending: "Enviando…", sent: "Mensagem enviada. Respondo em breve!",
+  sendFail: "Não deu para enviar. Abrindo seu app de e-mail…",
   back: "↑ Voltar à superfície", foot: "© 2026 Mateo Calazans · Natal, Brasil",
   levelsAria: "Níveis", depth: "PROFUNDIDADE", goTo: "Ir para",
   stops: ["Superfície", "Sobre", "Código", "Trajetória", "Contato"],
@@ -53,6 +57,8 @@ const pt = {
 export type Strings = typeof pt;
 
 const en: Strings = {
+  metaTitle: "Mateo Calazans — Shopify Developer",
+  metaDesc: "Mateo Calazans — Shopify developer and Theme Architect from Natal, Brazil. High-performance Shopify storefronts that convert.",
   navAria: "Sections", n1: "About", n2: "Code", n3: "Journey", n4: "Contact",
   cv: "Download CV ↓", status: "Available for work",
   tagline: "Crafting high-performance Shopify storefronts that convert.",
@@ -92,6 +98,8 @@ const en: Strings = {
   h4: "Level 04 — Contact", w4: { a: "C", b: "NTACT", len: 7 }, bottom: "−1000 m · the bottom",
   together: "Let's work together.", together2: "Have a project in mind? I'd love to hear about it.",
   fName: "Name", fEmail: "Email", fMsg: "Message", send: "Send message",
+  sending: "Sending…", sent: "Message sent. I'll get back to you soon!",
+  sendFail: "Couldn't send it. Opening your email app…",
   back: "↑ Back to the surface", foot: "© 2026 Mateo Calazans · Natal, Brazil",
   levelsAria: "Levels", depth: "DEPTH", goTo: "Go to",
   stops: ["Surface", "About", "Code", "Journey", "Contact"],
