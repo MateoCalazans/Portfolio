@@ -328,6 +328,9 @@ function applyLang(l: Lang) {
   document.querySelectorAll<HTMLElement>("[data-t-aria]").forEach((el) => {
     el.setAttribute("aria-label", String(lookup(t, el.dataset.tAria!)));
   });
+  document.querySelectorAll<HTMLElement>("[data-t-href]").forEach((el) => {
+    el.setAttribute("href", String(lookup(t, el.dataset.tHref!)));
+  });
   document.querySelectorAll<HTMLElement>("[data-t-len]").forEach((el) => {
     el.style.setProperty("--len", String(lookup(t, `${el.dataset.tLen}.len`)));
   });
